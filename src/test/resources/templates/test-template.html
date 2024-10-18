@@ -1,0 +1,12 @@
+{{> header}}
+{{?dogs}}
+<ul>
+    {{!}}This is a great comment!{{/}}
+    {{#dog dogs}}
+    <li>{{dog.name}}-{{dog.age}}</li>
+    {{/}}
+</ul>
+{{/}}
+{{^dogs}}
+No dogs.
+{{/}}

@@ -10,20 +10,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class CustacheTest {
 
-    final String template = """
-            {{?dogs}}
-                <ul>
-                {{!}}This is a great comment!{{/}}
-                {{#dog dogs}}
-                    <li>{{dog.name}}-{{dog.age}}</li>
-                {{/}}
-                </ul>
-            {{/}}
-            {{^dogs}}
-                No dogs.
-            {{/}}
-            """;
-
     @Value
     public static class Dog {
         String name;
@@ -33,21 +19,18 @@ class CustacheTest {
     @Test
     void basic_integration_test() {
 
-        var context = new Context();
-        context.def("dogs", List.of(
+        String result = new Custache().templateFromClasspath("test-template", "dogs", List.of(
                 new Dog("faria", 12),
                 new Dog("chucho", 14)
         ));
 
-        String result = Custache.parse("test", template).evaluate(context);
-
         System.out.println(result);
-        assertThat(result.replaceAll("\\s+", "")).isEqualTo("<ul><li>faria-12</li><li>chucho-14</li></ul>");
-        assertThat(result).isEqualTo("\n" +
-                "    <ul>\n" +
-                "        <li>faria-12</li>\n" +
-                "        <li>chucho-14</li>\n" +
-                "    </ul>");
+        assertThat(result.replaceAll("\\s+", "")).isEqualTo("<head></head><ul><li>faria-12</li><li>chucho-14</li></ul>");
+        assertThat(result).isEqualTo("<head></head>\n" +
+                "<ul>\n" +
+                "    <li>faria-12</li>\n" +
+                "    <li>chucho-14</li>\n" +
+                "</ul>");
     }
 
     @Test
@@ -56,22 +39,21 @@ class CustacheTest {
         var context = new Context();
         context.def("dogs", List.of());
 
-        String result = Custache.parse("test", template).evaluate(context);
+        String result = new Custache().templateFromClasspath("test-template", "dogs", List.of());
 
         System.out.println(result);
-        assertThat(result.replaceAll("\\s+", "")).isEqualTo("Nodogs.");
+        assertThat(result.replaceAll("\\s+", "")).isEqualTo("<head></head>Nodogs.");
     }
 
     @Test
     void basic_integration_test_list_not_defined() {
 
-        var context = new Context();
-
         try {
-            Custache.parse("test", template).evaluate(context);
+            new Custache().templateFromClasspath("test-template", "dogsXXXXX", List.of());
+
             fail();
         } catch (Exception e) {
-            assertThat(e).hasMessage("evaluating expression: dogs, at: test:1,4")
+            assertThat(e).hasMessage("evaluating expression: dogs, at: templates/test-template.html:2,4")
                     .getCause().hasMessage("variable not defined: 'dogs'");
         }
     }
@@ -82,7 +64,7 @@ class CustacheTest {
         var context = new Context();
         context.def("a", "b");
 
-        var result = Custache.parse("test", "{{a.class.getName.toUpperCase}}").evaluate(context);
+        var result = new Parser("test", "{{a.class.getName.toUpperCase}}").parse().evaluate(context);
 
         System.out.println(result);
         assertThat(result.replaceAll("\\s+", "")).isEqualTo("JAVA.LANG.STRING");

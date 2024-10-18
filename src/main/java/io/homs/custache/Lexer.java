@@ -7,15 +7,15 @@ import lombok.Getter;
 @Getter
 public class Lexer {
 
-    final String templateId;
+    final String templateUrn;
     final String content;
 
     int p;
     int row;
     int col;
 
-    public Lexer(String templateId, String content) {
-        this.templateId = templateId;
+    public Lexer(String templateUrn, String content) {
+        this.templateUrn = templateUrn;
         this.content = content;
         this.p = 0;
         this.row = 1;
@@ -56,7 +56,7 @@ public class Lexer {
 
     public void consumeChars(String prefix) {
         if (!currentPosStartsWith(prefix)) {
-            throw new RuntimeException("expected: " + prefix + ", at: " + templateId + ":" + row + "," + col);
+            throw new RuntimeException("expected: " + prefix + ", at: " + templateUrn + ":" + row + "," + col);
         }
         for (int i = 0; i < prefix.length(); i++) {
             consumeChar();

@@ -19,6 +19,7 @@ class ParserTest {
                 Arguments.of("{{?x}}{{^y}}{{?z}}{{/}}{{/}}{{/}}"),
 
                 Arguments.of("""
+                        {{>header}}
                         {{?dogs}}
                             <ul>
                             {{!}}This is a great comment!{{/}}
@@ -30,6 +31,7 @@ class ParserTest {
                         {{^dogs}}
                             No dogs.
                         {{/}}
+                        {{>footer}}
                         """)
         );
     }

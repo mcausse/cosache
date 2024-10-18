@@ -1,20 +1,28 @@
 package io.homs.custache;
 
 import io.homs.custache.ast.Ast;
+import io.homs.custache.ast.IncludeAst;
 import lombok.SneakyThrows;
 
 public class Custache {
 
-    public static Ast parse(String templateId, String templateContent) {
-        return new Parser(templateId, templateContent).parse();
+    private final TemplateLoadingStrategy templateLoadingStrategy;
+
+    public Custache(TemplateLoadingStrategy templateLoadingStrategy) {
+        this.templateLoadingStrategy = templateLoadingStrategy;
+    }
+
+    public Custache() {
+        this(new DefaultClasspathTemplateLoadingStrategy());
     }
 
     @SneakyThrows
-    public static String templateFromClasspath(String templateName, String modelName, Object model) {
-        String template = FileUtils.loadFromClasspath(templateName);
+    public String templateFromClasspath(String templateUrn, String modelName, Object model) {
+        Ast ast = templateLoadingStrategy.loadParseredTemplate(templateUrn);
         Context ctx = new Context();
         ctx.def(modelName, model);
-        String result = parse(templateName, template).evaluate(ctx);
+        ctx.def(IncludeAst.TEMPLATE_LOADING_STRATEGY, templateLoadingStrategy);
+        String result = ast.evaluate(ctx);
         return result;
     }
 }

@@ -26,12 +26,12 @@ import java.util.Optional;
  */
 public class Parser {
 
-    final String templateId;
+    final String templateUrn;
     final Lexer lexer;
 
-    public Parser(String templateId, String template) {
-        this.templateId = templateId;
-        this.lexer = new Lexer(templateId, template);
+    public Parser(String templateUrn, String template) {
+        this.templateUrn = templateUrn;
+        this.lexer = new Lexer(templateUrn, template);
     }
 
     public Ast parse() {
@@ -68,6 +68,9 @@ public class Parser {
                 case '#':
                     tagAst = parseForAst();
                     break;
+                case '>':
+                    tagAst = parseForInclude();
+                    break;
                 default:
                     tagAst = parseValue();
             }
@@ -77,7 +80,7 @@ public class Parser {
                 break;
             }
         }
-        return new TemplateAst(templateId, initialRow, initialCol, astsList);
+        return new TemplateAst(templateUrn, initialRow, initialCol, astsList);
     }
 
     protected ValueAst parseValue() {
@@ -87,7 +90,26 @@ public class Parser {
         ExpressionAst expressionAst = parseExpression();
         lexer.consumeChars("}}");
 
-        return new ValueAst(templateId, initialRow, initialCol, expressionAst);
+        return new ValueAst(templateUrn, initialRow, initialCol, expressionAst);
+    }
+
+    protected IncludeAst parseForInclude() {
+        int initialRow = lexer.getRow();
+        int initialCol = lexer.getCol();
+        lexer.consumeChars(">");
+        lexer.consumeBlanks();
+
+        int initialPos = lexer.getP();
+        while (lexer.isNotEof() && !lexer.currentPosStartsWith("}}")) {
+            lexer.consumeChar();
+        }
+        if (!lexer.isNotEof()) {
+            throw new RuntimeException("expected closing }}, but eof; at " + templateUrn + ":" + initialRow + "," + initialCol);
+        }
+        String includeString = lexer.getString(initialPos);
+        lexer.consumeChars("}}");
+
+        return new IncludeAst(templateUrn, initialRow, initialCol, includeString);
     }
 
     protected CommentAst parseCommentAst() {
@@ -98,7 +120,7 @@ public class Parser {
         Optional<TextAst> textOpt = parseTextAst();
         lexer.consumeChars("{{/}}");
 
-        return new CommentAst(templateId, initialRow, initialCol, textOpt.orElse(null));
+        return new CommentAst(templateUrn, initialRow, initialCol, textOpt.orElse(null));
     }
 
     protected IfAst parseIfAst() {
@@ -106,11 +128,12 @@ public class Parser {
         int initialCol = lexer.getCol();
 
         lexer.consumeChars("?");
+        lexer.consumeBlanks();
         ExpressionAst expressionAst = parseExpression();
         lexer.consumeChars("}}");
         TemplateAst bodyAst = parseTemplate(true);
         lexer.consumeChars("{{/}}");
-        return new IfAst(templateId, initialRow, initialCol, expressionAst, bodyAst);
+        return new IfAst(templateUrn, initialRow, initialCol, expressionAst, bodyAst);
     }
 
     protected IfNotAst parseIfNotAst() {
@@ -118,11 +141,12 @@ public class Parser {
         int initialCol = lexer.getCol();
 
         lexer.consumeChars("^");
+        lexer.consumeBlanks();
         ExpressionAst expressionAst = parseExpression();
         lexer.consumeChars("}}");
         TemplateAst bodyAst = parseTemplate(true);
         lexer.consumeChars("{{/}}");
-        return new IfNotAst(templateId, initialRow, initialCol, expressionAst, bodyAst);
+        return new IfNotAst(templateUrn, initialRow, initialCol, expressionAst, bodyAst);
     }
 
     protected ForAst parseForAst() {
@@ -130,13 +154,14 @@ public class Parser {
         int initialCol = lexer.getCol();
 
         lexer.consumeChars("#");
+        lexer.consumeBlanks();
         String ident = lexer.consumeWord();
         lexer.consumeBlanks();
         ExpressionAst expressionAst = parseExpression();
         lexer.consumeChars("}}");
         TemplateAst bodyAst = parseTemplate(true);
         lexer.consumeChars("{{/}}");
-        return new ForAst(templateId, initialRow, initialCol, ident, expressionAst, bodyAst);
+        return new ForAst(templateUrn, initialRow, initialCol, ident, expressionAst, bodyAst);
     }
 
     protected ExpressionAst parseExpression() {
@@ -154,9 +179,9 @@ public class Parser {
         }
 
         if (!lexer.isNotEof()) {
-            throw new RuntimeException("unexpected eof while parsing an expression, at: " + templateId + ":" + initialRow + "," + initialCol);
+            throw new RuntimeException("unexpected eof while parsing an expression, at: " + templateUrn + ":" + initialRow + "," + initialCol);
         }
-        return new ExpressionAst(templateId, initialRow, initialCol, accessors);
+        return new ExpressionAst(templateUrn, initialRow, initialCol, accessors);
     }
 
     protected Optional<TextAst> parseTextAst() {
@@ -171,6 +196,6 @@ public class Parser {
         if (text.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(new TextAst(templateId, initialRow, initialCol, text));
+        return Optional.of(new TextAst(templateUrn, initialRow, initialCol, text));
     }
 }
