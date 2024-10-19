@@ -43,7 +43,7 @@ public class Evaluation {
         return (Iterable<?>) value;
     }
 
-    protected static boolean isTrue(Object o) {
+    public static boolean isTrue(Object o) {
         if (o == null) {
             return false;
         } else if (o instanceof Boolean r) {

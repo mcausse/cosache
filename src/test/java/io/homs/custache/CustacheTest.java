@@ -19,7 +19,10 @@ class CustacheTest {
     @Test
     void basic_integration_test() {
 
-        String result = new Custache().templateFromClasspath("test-template", "dogs", List.of(
+        var sut = new Custache();
+        var templateAst = sut.loadTemplate("test-template");
+
+        String result = sut.evaluate(templateAst, "dogs", List.of(
                 new Dog("faria", 12),
                 new Dog("chucho", 14)
         ));
@@ -39,7 +42,10 @@ class CustacheTest {
         var context = new Context();
         context.def("dogs", List.of());
 
-        String result = new Custache().templateFromClasspath("test-template", "dogs", List.of());
+        var sut = new Custache();
+        var templateAst = sut.loadTemplate("test-template");
+
+        String result = sut.evaluate(templateAst, "dogs", List.of());
 
         System.out.println(result);
         assertThat(result.replaceAll("\\s+", "")).isEqualTo("<head></head>Nodogs.");
@@ -48,8 +54,11 @@ class CustacheTest {
     @Test
     void basic_integration_test_list_not_defined() {
 
+        var sut = new Custache();
+        var templateAst = sut.loadTemplate("test-template");
         try {
-            new Custache().templateFromClasspath("test-template", "dogsXXXXX", List.of());
+
+            sut.evaluate(templateAst, "dogsXXXX", List.of());
 
             fail();
         } catch (Exception e) {

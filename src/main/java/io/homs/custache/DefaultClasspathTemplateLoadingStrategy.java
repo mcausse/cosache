@@ -3,6 +3,9 @@ package io.homs.custache;
 import io.homs.custache.ast.Ast;
 import lombok.SneakyThrows;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 public class DefaultClasspathTemplateLoadingStrategy implements TemplateLoadingStrategy {
 
     private final String prefix;
@@ -22,10 +25,14 @@ public class DefaultClasspathTemplateLoadingStrategy implements TemplateLoadingS
     public Ast loadParseredTemplate(String templateUrn) {
         final String fullUrn = prefix + templateUrn + suffix;
         try {
-            String templateContent = FileUtils.loadFromClasspath(fullUrn);
+            String templateContent = loadTemplateContent(fullUrn);
             return new Parser(fullUrn, templateContent).parse();
         } catch (Exception e) {
             throw new RuntimeException("problem loading: " + fullUrn, e);
         }
+    }
+
+    protected String loadTemplateContent(String fullUrn) throws URISyntaxException, IOException {
+        return FileUtils.loadFromClasspath(fullUrn);
     }
 }
