@@ -3,6 +3,8 @@ package io.homs.custache;
 import io.homs.custache.ast.Ast;
 import io.homs.custache.ast.IncludeAst;
 import io.homs.custache.ast.TextAst;
+import io.homs.custache.files.DefaultClasspathTemplateLoadingStrategy;
+import io.homs.custache.files.TemplateLoadingStrategy;
 
 public class Custache {
 

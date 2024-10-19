@@ -1,15 +1,13 @@
 package io.homs.custache;
 
+import lombok.SneakyThrows;
+
 import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Evaluation {
 
@@ -58,51 +56,36 @@ public class Evaluation {
             return Array.getLength(o) > 0;
         } else if (o instanceof Map) {
             return !((Map<?, ?>) o).isEmpty();
+        } else {
+            return true;
         }
-        return true;
     }
 
-    protected static Object getByKey(Object o, Object key) {
+    @SneakyThrows
+    protected static Object getByKey(Object o, String key) {
 
         if (o == null) {
             throw new RuntimeException();
-        } else if (o instanceof Map) {
-            Map<?, ?> m = (Map<?, ?>) o;
+        }
+        if (o instanceof Map) {
+            Map<String, ?> m = (Map<String, ?>) o;
             if (!m.containsKey(key)) {
                 throw new RuntimeException("key not found: " + key);
             }
             return m.get(key);
-        } else if (o instanceof Collection<?> c && key instanceof Number nindex) {
-            int index = nindex.intValue();
-            return new ArrayList<Object>(c).get(index);
-        } else if (o.getClass().isArray() && key instanceof Number nindex) {
-            int index = nindex.intValue();
-            return Array.get(o, index);
         } else {
-            if (!(key instanceof String)) {
-                throw new RuntimeException();
-            }
 
             Class<? extends Object> beanClass = o.getClass();
 
             /*
              * PROVA PROPIETAT DE JAVA BEAN
              */
-            BeanInfo info;
-            try {
-                info = Introspector.getBeanInfo(beanClass);
-            } catch (IntrospectionException e) {
-                throw new RuntimeException("describing " + beanClass.getName(), e);
-            }
-            PropertyDescriptor[] pds = info.getPropertyDescriptors();
-            for (PropertyDescriptor pd : pds) {
-                if (pd.getName().equals(key)) {
-                    try {
-                        return pd.getReadMethod().invoke(o);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+            BeanInfo info = Introspector.getBeanInfo(beanClass);
+            Optional<PropertyDescriptor> pdOpt = Arrays.stream(info.getPropertyDescriptors())
+                    .filter((PropertyDescriptor pd) -> pd.getName().equals(key))
+                    .findFirst();
+            if (pdOpt.isPresent()) {
+                return pdOpt.get().getReadMethod().invoke(o);
             }
 
             /*
@@ -110,11 +93,7 @@ public class Evaluation {
              */
             for (Method m : beanClass.getMethods()) {
                 if (m.getName().equals(key) && m.getParameterTypes().length == 0) {
-                    try {
-                        return m.invoke(o);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    return m.invoke(o);
                 }
             }
 

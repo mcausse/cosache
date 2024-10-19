@@ -12,16 +12,23 @@ import java.util.Optional;
  * <pre>
  *
  * <template>		::= { (TEXT | <tag>) }
- * <tag>			::= <comment> | <if> | <ifnot> | <for> | <value>
+ * <tag>			::= <comment> | <if> | <ifnot> | <for> | <include> | <value>
  *
  * <comment> 		::= "{{!}}" TEXT "{{/}}"
  * <if>  			::= "{{?" <expression> "}}" <template> "{{/}}"
  * <ifnot>  		::= "{{^" <expression> "}}" <template> "{{/}}"
  * <for>  			::= "{{#" IDENT <expression> "}}" <template> "{{/}}"
+ * <include>	    ::= "{{>" IDENT "}}"
  * <value> 		    ::= "{{" <expression> "}}"
  *
  * <expression>	::= IDENT {"." IDENT}
  *
+ *
+ * TODO millorar els includes: fer alias?
+ *      {{> table(user : repository.user)}}
+ *
+ * TODO que IncludeAst no carregui cada vegada per cada eval
+ * TODO que el context (d'evaluació) que no serveixi per a configuració de parser, és diferent!
  * </pre>
  */
 public class Parser {
@@ -52,28 +59,7 @@ public class Parser {
                 break;
             }
 
-            // parse Tag
-            lexer.consumeChars("{{");
-            final Ast tagAst;
-            switch (lexer.getCurrentChar()) {
-                case '!':
-                    tagAst = parseCommentAst();
-                    break;
-                case '?':
-                    tagAst = parseIfAst();
-                    break;
-                case '^':
-                    tagAst = parseIfNotAst();
-                    break;
-                case '#':
-                    tagAst = parseForAst();
-                    break;
-                case '>':
-                    tagAst = parseForInclude();
-                    break;
-                default:
-                    tagAst = parseValue();
-            }
+            final Ast tagAst = parseTag();
             astsList.add(tagAst);
 
             if (expectEnderTag && lexer.currentPosStartsWith("{{/}}")) {
@@ -81,6 +67,31 @@ public class Parser {
             }
         }
         return new TemplateAst(templateUrn, initialRow, initialCol, astsList);
+    }
+
+    private Ast parseTag() {
+        lexer.consumeChars("{{");
+        final Ast tagAst;
+        switch (lexer.getCurrentChar()) {
+            case '!':
+                tagAst = parseCommentAst();
+                break;
+            case '?':
+                tagAst = parseIfAst();
+                break;
+            case '^':
+                tagAst = parseIfNotAst();
+                break;
+            case '#':
+                tagAst = parseForAst();
+                break;
+            case '>':
+                tagAst = parseForInclude();
+                break;
+            default:
+                tagAst = parseValue();
+        }
+        return tagAst;
     }
 
     protected ValueAst parseValue() {

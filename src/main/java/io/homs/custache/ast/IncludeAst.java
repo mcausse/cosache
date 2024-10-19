@@ -1,7 +1,7 @@
 package io.homs.custache.ast;
 
 import io.homs.custache.Context;
-import io.homs.custache.TemplateLoadingStrategy;
+import io.homs.custache.files.TemplateLoadingStrategy;
 
 public class IncludeAst extends Ast {
 

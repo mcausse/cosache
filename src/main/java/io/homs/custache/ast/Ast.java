@@ -4,6 +4,7 @@ import io.homs.custache.Context;
 
 
 public abstract class Ast {
+
     final String templateId;
     final int col;
     final int row;
