@@ -25,6 +25,14 @@ public class ExpressionAst extends Ast {
         }
     }
 
+    public Object evaluateToObject(Context context) {
+        try {
+            return evaluation.evaluateToObject(context, idents);
+        } catch (Exception e) {
+            throw new RuntimeException("evaluating expression: " + this + ", at: " + super.toString(), e);
+        }
+    }
+
     public boolean evaluateToBoolean(Context context) {
         try {
             return evaluation.evaluateToBoolean(context, idents);

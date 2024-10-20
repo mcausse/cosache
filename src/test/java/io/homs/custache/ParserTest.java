@@ -19,10 +19,11 @@ class ParserTest {
                 Arguments.of("{{?x}}{{^y}}{{?z}}{{/}}{{/}}{{/}}"),
 
                 Arguments.of("""
-                        {{>header}}
+                        {{>basic/header(jou=juas.size, juas=juan)}}
                         {{?dogs}}
                             <ul>
                             {{!}}This is a great comment!{{/}}
+                            {{!}}{{/}}
                             {{#dog dogs}}
                                 <li>{{dog.name}}-{{dog.age}}</li>
                             {{/}}
@@ -31,7 +32,7 @@ class ParserTest {
                         {{^dogs}}
                             No dogs.
                         {{/}}
-                        {{>footer}}
+                        {{>basic/footer}}
                         """)
         );
     }
@@ -45,5 +46,29 @@ class ParserTest {
         var ast = sut.parse();
 
         assertThat(ast).hasToString(template);
+    }
+
+    private static Stream<Arguments> provider2() {
+        return Stream.of(
+                Arguments.of("{{>basic/footer}}", "{{>basic/footer}}"),
+                Arguments.of("{{> basic/footer }}", "{{>basic/footer}}"),
+
+                Arguments.of("{{>basic/footer(jou=dog.name)}}", "{{>basic/footer(jou=dog.name)}}"),
+                Arguments.of("{{> basic/footer ( jou = dog.name ) }}", "{{>basic/footer(jou=dog.name)}}"),
+
+                Arguments.of("{{>basic/header(jou=juas.size, juas=juan)}}", "{{>basic/header(jou=juas.size, juas=juan)}}"),
+                Arguments.of("{{> basic/header ( jou = juas.size , juas = juan ) }}", "{{>basic/header(jou=juas.size, juas=juan)}}")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provider2")
+    void test_that_parser_produces_the_expected(String template, String expected) {
+        var sut = new Parser("test", template);
+
+        // Act
+        var ast = sut.parse();
+
+        assertThat(ast).hasToString(expected);
     }
 }

@@ -1,6 +1,8 @@
 package io.homs.custache;
 
 import io.homs.custache.ast.*;
+import io.homs.custache.files.DefaultClasspathTemplateLoadingStrategy;
+import io.homs.custache.files.TemplateLoadingStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,27 +20,34 @@ import java.util.Optional;
  * <if>  			::= "{{?" <expression> "}}" <template> "{{/}}"
  * <ifnot>  		::= "{{^" <expression> "}}" <template> "{{/}}"
  * <for>  			::= "{{#" IDENT <expression> "}}" <template> "{{/}}"
- * <include>	    ::= "{{>" IDENT "}}"
  * <value> 		    ::= "{{" <expression> "}}"
  *
- * <expression>	::= IDENT {"." IDENT}
+ * <include>	    ::= "{{>" IDENT ["(" IDENT "=" <expression> {"," IDENT "=" <expression>} ")"] "}}"
+ *
+ * <expression>	    ::= IDENT {"." IDENT}
  *
  *
  * TODO millorar els includes: fer alias?
  *      {{> table(user : repository.user)}}
  *
- * TODO que IncludeAst no carregui cada vegada per cada eval
- * TODO que el context (d'evaluació) que no serveixi per a configuració de parser, és diferent!
+ * XXXX que IncludeAst no carregui cada vegada per cada eval
+ * XXXX que el context (d'evaluació) que no serveixi per a configuració de parser, és diferent!
  * </pre>
  */
 public class Parser {
 
+    final TemplateLoadingStrategy templateLoadingStrategy;
     final String templateUrn;
     final Lexer lexer;
 
-    public Parser(String templateUrn, String template) {
+    public Parser(TemplateLoadingStrategy templateLoadingStrategy, String templateUrn, String template) {
+        this.templateLoadingStrategy = templateLoadingStrategy;
         this.templateUrn = templateUrn;
         this.lexer = new Lexer(templateUrn, template);
+    }
+
+    public Parser(String templateUrn, String template) {
+        this(new DefaultClasspathTemplateLoadingStrategy(), templateUrn, template);
     }
 
     public Ast parse() {
@@ -111,16 +120,51 @@ public class Parser {
         lexer.consumeBlanks();
 
         int initialPos = lexer.getP();
-        while (lexer.isNotEof() && !lexer.currentPosStartsWith("}}")) {
+        while (lexer.isNotEof() && !lexer.currentPosStartsWith("}}")
+                && !lexer.currentPosStartsWithBlank()
+                && !lexer.currentPosStartsWith("(")) {
             lexer.consumeChar();
         }
         if (!lexer.isNotEof()) {
             throw new RuntimeException("expected closing }}, but eof; at " + templateUrn + ":" + initialRow + "," + initialCol);
         }
         String includeString = lexer.getString(initialPos);
+
+        lexer.consumeBlanks();
+
+        List<IncludeAst.MappingPair> mappingPairs = new ArrayList<>();
+        if (lexer.currentPosStartsWith("(")) {
+            lexer.consumeChars("(");
+            lexer.consumeBlanks();
+
+            // es parsejen els mappings:
+            // "(" IDENT "=" <expression> {"," IDENT "=" <expression>} ")"
+
+            String ident = lexer.consumeWord();
+            lexer.consumeBlanks();
+            lexer.consumeChars("=");
+            lexer.consumeBlanks();
+            ExpressionAst expressionAst = parseExpression();
+            lexer.consumeBlanks();
+            mappingPairs.add(new IncludeAst.MappingPair(ident, expressionAst));
+
+            while (lexer.currentPosStartsWith(",")) {
+                lexer.consumeChars(",");
+                lexer.consumeBlanks();
+                ident = lexer.consumeWord();
+                lexer.consumeBlanks();
+                lexer.consumeChars("=");
+                lexer.consumeBlanks();
+                expressionAst = parseExpression();
+                lexer.consumeBlanks();
+                mappingPairs.add(new IncludeAst.MappingPair(ident, expressionAst));
+            }
+            lexer.consumeChars(")");
+        }
+        lexer.consumeBlanks();
         lexer.consumeChars("}}");
 
-        return new IncludeAst(templateUrn, initialRow, initialCol, includeString);
+        return new IncludeAst(templateUrn, initialRow, initialCol, templateLoadingStrategy, includeString, mappingPairs);
     }
 
     protected CommentAst parseCommentAst() {

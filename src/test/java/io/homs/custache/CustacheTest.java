@@ -20,7 +20,7 @@ class CustacheTest {
     void basic_integration_test() {
 
         var sut = new Custache();
-        var templateAst = sut.loadTemplate("test-template");
+        var templateAst = sut.loadParseredTemplate("basic/test-template");
 
         String result = sut.evaluate(templateAst, "dogs", List.of(
                 new Dog("faria", 12),
@@ -43,7 +43,7 @@ class CustacheTest {
         context.def("dogs", List.of());
 
         var sut = new Custache();
-        var templateAst = sut.loadTemplate("test-template");
+        var templateAst = sut.loadParseredTemplate("basic/test-template");
 
         String result = sut.evaluate(templateAst, "dogs", List.of());
 
@@ -55,14 +55,14 @@ class CustacheTest {
     void basic_integration_test_list_not_defined() {
 
         var sut = new Custache();
-        var templateAst = sut.loadTemplate("test-template");
+        var templateAst = sut.loadParseredTemplate("basic/test-template");
         try {
 
             sut.evaluate(templateAst, "dogsXXXX", List.of());
 
             fail();
         } catch (Exception e) {
-            assertThat(e).hasMessage("evaluating expression: dogs, at: templates/test-template.html:2,4")
+            assertThat(e).hasMessage("evaluating expression: dogs, at: templates/basic/test-template.html:2,4")
                     .getCause().hasMessage("variable not defined: 'dogs'");
         }
     }
@@ -78,4 +78,21 @@ class CustacheTest {
         System.out.println(result);
         assertThat(result.replaceAll("\\s+", "")).isEqualTo("JAVA.LANG.STRING");
     }
+
+    @Test
+    void include_test_with_variable_mapping() {
+
+        var sut = new Custache();
+        var templateAst = sut.loadParseredTemplate("include/template");
+
+        String result = sut.evaluate(templateAst, "dogs", List.of(
+                new Dog("faria", 12),
+                new Dog("chucho", 14)
+        ));
+
+        System.out.println(result);
+        assertThat(result.replaceAll("\\s+", "")).isEqualTo("faria-12chucho-14");
+        assertThat(result).isEqualTo("faria-12chucho-14");
+    }
+
 }

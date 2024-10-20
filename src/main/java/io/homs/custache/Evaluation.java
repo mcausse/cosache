@@ -11,10 +11,10 @@ import java.util.*;
 
 public class Evaluation {
 
-    protected Object evaluateToObject(Context context, List<String> idents) {
+    public Object evaluateToObject(Context context, List<String> idents) {
 
         if (idents.isEmpty()) {
-            throw new RuntimeException("no idents ¿?");
+            throw new RuntimeException("no idents");
         }
         String varName = idents.get(0);
 
@@ -49,7 +49,7 @@ public class Evaluation {
         } else if (o instanceof Number r) {
             return r.doubleValue() > 0.0;
         } else if (o instanceof String r) {
-            return r.length() > 0;
+            return !r.isEmpty();
         } else if (o instanceof Collection<?> r) {
             return !r.isEmpty();
         } else if (o.getClass().isArray()) {

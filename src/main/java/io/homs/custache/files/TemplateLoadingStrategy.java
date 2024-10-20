@@ -1,8 +1,14 @@
 package io.homs.custache.files;
 
-import io.homs.custache.ast.Ast;
+import lombok.Value;
 
 public interface TemplateLoadingStrategy {
 
-    Ast loadParseredTemplate(String templateUrn);
+    Template loadTemplate(String templateUrn);
+
+    @Value
+    class Template {
+        String fullTemplateUrn;
+        String templateContent;
+    }
 }

@@ -1,8 +1,6 @@
 package io.homs.custache;
 
-
 import lombok.Getter;
-
 
 @Getter
 public class Lexer {
@@ -30,6 +28,10 @@ public class Lexer {
         return isNotEof() && content.startsWith(prefix, p);
     }
 
+    public boolean currentPosStartsWithBlank() {
+        return isNotEof() && Character.isWhitespace(content.charAt(p));
+    }
+
     public void consumeChar() {
         if (content.charAt(p) == '\n') {
             row++;
@@ -41,7 +43,7 @@ public class Lexer {
     }
 
     public void consumeBlanks() {
-        while (Character.isWhitespace(content.charAt(p))) {
+        while (isNotEof() && Character.isWhitespace(content.charAt(p))) {
             consumeChar();
         }
     }
@@ -55,6 +57,9 @@ public class Lexer {
     }
 
     public void consumeChars(String prefix) {
+        if (p + prefix.length() > content.length()) {
+            throw new RuntimeException("expected: " + prefix + ", but eof; at: " + templateUrn + ":" + row + "," + col);
+        }
         if (!currentPosStartsWith(prefix)) {
             throw new RuntimeException("expected: " + prefix + ", at: " + templateUrn + ":" + row + "," + col);
         }

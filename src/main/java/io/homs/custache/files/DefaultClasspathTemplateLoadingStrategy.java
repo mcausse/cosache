@@ -1,7 +1,5 @@
 package io.homs.custache.files;
 
-import io.homs.custache.Parser;
-import io.homs.custache.ast.Ast;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -23,11 +21,10 @@ public class DefaultClasspathTemplateLoadingStrategy implements TemplateLoadingS
 
     @SneakyThrows
     @Override
-    public Ast loadParseredTemplate(String templateUrn) {
+    public Template loadTemplate(String templateUrn) {
         final String fullUrn = prefix + templateUrn + suffix;
         try {
-            String templateContent = loadTemplateContent(fullUrn);
-            return new Parser(fullUrn, templateContent).parse();
+            return new Template(fullUrn, loadTemplateContent(fullUrn));
         } catch (Exception e) {
             throw new RuntimeException("problem loading: " + fullUrn, e);
         }
