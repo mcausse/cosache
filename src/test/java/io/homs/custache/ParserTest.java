@@ -57,7 +57,7 @@ class ParserTest {
                 Arguments.of("{{> basic/footer ( jou = dog.name ) }}", "{{>basic/footer(jou=dog.name)}}"),
 
                 Arguments.of("{{>basic/header(jou=juas.size, juas=juan)}}", "{{>basic/header(jou=juas.size, juas=juan)}}"),
-                Arguments.of("{{> basic/header ( jou = juas.size , juas = juan ) }}", "{{>basic/header(jou=juas.size, juas=juan)}}")
+                Arguments.of("{{> basic/header ( jo-u = juas.size , juas = juan ) }}", "{{>basic/header(jo-u=juas.size, juas=juan)}}")
         );
     }
 

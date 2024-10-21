@@ -50,10 +50,14 @@ public class Lexer {
 
     public String consumeWord() {
         int initialP = p;
-        while (isNotEof() && Character.isJavaIdentifierPart(content.charAt(p))) {
+        while (isNotEof() && isWordChar(content.charAt(p))) {
             consumeChar();
         }
         return getString(initialP);
+    }
+
+    protected boolean isWordChar(char c) {
+        return Character.isJavaIdentifierPart(c) || c == '-';
     }
 
     public void consumeChars(String prefix) {
