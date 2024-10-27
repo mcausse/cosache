@@ -1,9 +1,12 @@
 package io.homs.custache;
 
+import io.homs.custache.ast.Ast;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +51,7 @@ class ParserTest {
         assertThat(ast).hasToString(template);
     }
 
-    private static Stream<Arguments> provider2() {
+    private static Stream<Arguments> includesProvider() {
         return Stream.of(
                 Arguments.of("{{>basic/footer}}", "{{>basic/footer}}"),
                 Arguments.of("{{> basic/footer }}", "{{>basic/footer}}"),
@@ -62,13 +65,24 @@ class ParserTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provider2")
-    void test_that_parser_produces_the_expected(String template, String expected) {
+    @MethodSource("includesProvider")
+    void test_that_parser_includes_produces_the_expected(String template, String expected) {
         var sut = new Parser("test", template);
 
         // Act
         var ast = sut.parse();
 
         assertThat(ast).hasToString(expected);
+    }
+
+    @Test
+    void assert_that_2_nested_loop_should_work() {
+        Ast sut = new Parser("test", "{{#i is}}{{#j js}}{{i}}{{j}}{{/}}{{/}}").parse();
+
+        var ctx = new Context();
+        ctx.def("is", List.of("a", "b", "c"));
+        ctx.def("js", List.of(1, 2, 3));
+
+        assertThat(sut.evaluate(ctx)).isEqualTo("a1a2a3b1b2b3c1c2c3");
     }
 }

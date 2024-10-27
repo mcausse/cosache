@@ -21,8 +21,11 @@ public class Custache {
 
     public Ast loadParseredTemplate(String templateUrn) {
         TemplateLoadingStrategy.Template loadedTemplate = templateLoadingStrategy.loadTemplate(templateUrn);
-        Ast ast = new Parser(templateLoadingStrategy, loadedTemplate.getFullTemplateUrn(), loadedTemplate.getTemplateContent()).parse();
-        return ast;
+        return loadParseredTemplate(loadedTemplate);
+    }
+
+    public Ast loadParseredTemplate(TemplateLoadingStrategy.Template loadedTemplate) {
+        return new Parser(templateLoadingStrategy, loadedTemplate.getFullTemplateUrn(), loadedTemplate.getTemplateContent()).parse();
     }
 
     public String evaluate(Ast templateAst, String modelName, Object model) {

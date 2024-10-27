@@ -53,7 +53,11 @@ public class Lexer {
         while (isNotEof() && isWordChar(content.charAt(p))) {
             consumeChar();
         }
-        return getString(initialP);
+        var r = getString(initialP);
+        if (r.isEmpty()) {
+            throw new RuntimeException("expected to consume an identifiers, but not; at: " + templateUrn + ":" + row + "," + col);
+        }
+        return r;
     }
 
     protected boolean isWordChar(char c) {
