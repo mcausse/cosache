@@ -19,10 +19,8 @@ public class TextAst extends Ast {
 
     @Override
     public String evaluate(Context context) {
-
         if (context.find(TRIM_TEXT_AST) != null && Evaluation.isTrue(context.get(TRIM_TEXT_AST))) {
-            return text
-                    .replaceAll("\\n\\s*$", ""); // TODO
+            return text.replaceAll("\\n\\s*$", "");
         } else {
             return text;
         }

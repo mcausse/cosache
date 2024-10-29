@@ -27,7 +27,7 @@ import java.util.Optional;
  * <expression>	    ::= IDENT {"." IDENT}
  *
  *
- * TODO millorar els includes: fer alias?
+ * XXXX millorar els includes: fer alias?
  *      {{> table(user : repository.user)}}
  *
  * XXXX que IncludeAst no carregui cada vegada per cada eval

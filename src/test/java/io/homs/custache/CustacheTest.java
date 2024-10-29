@@ -1,5 +1,6 @@
 package io.homs.custache;
 
+import io.homs.custache.ast.Ast;
 import io.homs.custache.files.TemplateLoadingStrategy;
 import lombok.Value;
 import org.junit.jupiter.api.Test;
@@ -7,7 +8,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.awt.*;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -128,6 +131,56 @@ class CustacheTest {
         }
     }
 
+    @Test
+    void custache_can_evaluate_maps() {
+
+        final Custache custache = new Custache();
+        Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
+                "{{model.name.1}}"
+        ));
+
+        String r = custache
+                .newEvaluation(templateAst)
+                .with("model", Map.of("name", Map.of("1", 2)))
+                .evaluate();
+
+        assertThat(r).isEqualTo("2");
+    }
+
+    private static Stream<Arguments> model_evaluates_to_Provider() {
+        return Stream.of(
+                Arguments.of(null, "0"),
+                Arguments.of(Color.RED, "1"),
+
+                Arguments.of(true, "1"),
+                Arguments.of(false, "0"),
+                Arguments.of(5, "1"),
+                Arguments.of(0, "0"),
+                Arguments.of(5.2, "1"),
+                Arguments.of(0.0, "0"),
+                Arguments.of("jou", "1"),
+                Arguments.of("", "0"),
+
+                Arguments.of(List.of("1"), "1"),
+                Arguments.of(List.of(), "0"),
+
+                Arguments.of(new String[]{"1"}, "1"),
+                Arguments.of(new String[]{}, "0")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("model_evaluates_to_Provider")
+    public void model_evaluates_to(Object model, String expectedResult) {
+        final Custache custache = new Custache();
+        Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
+                "{{?model}}1{{/}}{{^model}}0{{/}}"
+        ));
+
+        String r = custache.evaluate(templateAst, "model", model);
+
+        assertThat(r).isEqualTo(expectedResult);
+    }
 }
 
 
