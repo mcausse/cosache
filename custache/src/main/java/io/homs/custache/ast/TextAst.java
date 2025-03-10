@@ -5,6 +5,7 @@ import io.homs.custache.Evaluation;
 
 public class TextAst extends Ast {
 
+    @Deprecated
     public static final String TRIM_TEXT_AST = "TRIM_TEXT_AST";
 
     final Evaluation evaluation = new Evaluation();
@@ -19,6 +20,7 @@ public class TextAst extends Ast {
 
     @Override
     public String evaluate(Context context) {
+        // TODO que aquesta lògica la faci el parser, no cada vegada evaluant, tu
         if (context.find(TRIM_TEXT_AST) != null && Evaluation.isTrue(context.get(TRIM_TEXT_AST))) {
             return text.replaceAll("\\n\\s*$", "");
         } else {

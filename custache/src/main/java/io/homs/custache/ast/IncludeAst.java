@@ -3,7 +3,6 @@ package io.homs.custache.ast;
 import io.homs.custache.Context;
 import io.homs.custache.Parser;
 import io.homs.custache.files.TemplateLoadingStrategy;
-import lombok.Value;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -51,11 +50,5 @@ public class IncludeAst extends Ast {
         }
         r.append("}}");
         return r.toString();
-    }
-
-    @Value
-    public static class MappingPair {
-        String left;
-        ExpressionAst right;
     }
 }

@@ -55,7 +55,7 @@ public class Lexer {
         }
         var r = getString(initialP);
         if (r.isEmpty()) {
-            throw new RuntimeException("expected to consume an identifiers, but not; at: " + templateUrn + ":" + row + "," + col);
+            throw new RuntimeException("expected to consume a word, but not; at: " + templateUrn + ":" + row + "," + col);
         }
         return r;
     }

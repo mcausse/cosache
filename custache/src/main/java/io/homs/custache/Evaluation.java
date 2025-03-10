@@ -7,14 +7,18 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class Evaluation {
 
     public Object evaluateToObject(Context context, List<String> idents) {
 
         if (idents.isEmpty()) {
-            throw new RuntimeException("no idents");
+            throw new RuntimeException("no idents"); // TODO
         }
         String varName = idents.get(0);
 
@@ -36,9 +40,9 @@ public class Evaluation {
         return isTrue(value);
     }
 
-    public Iterable<?> evaluateToIterable(Context context, List<String> idents) {
+    public Iterable<Object> evaluateToIterable(Context context, List<String> idents) {
         Object value = evaluateToObject(context, idents);
-        return (Iterable<?>) value;
+        return (Iterable<Object>) value;
     }
 
     public static boolean isTrue(Object o) {

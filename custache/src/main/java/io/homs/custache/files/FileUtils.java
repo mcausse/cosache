@@ -1,24 +1,32 @@
 package io.homs.custache.files;
 
 import java.io.IOException;
-import java.net.URI;
+import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FileUtils {
 
     public static String loadFromClasspath(String resourceName) throws URISyntaxException, IOException {
-        final URL resource = Thread.currentThread().getContextClassLoader().getResource(resourceName);
-        final URI uri = resource.toURI();
-        final Path path = Paths.get(uri);
-        final List<String> elements = Files.readAllLines(path);
-        return String.join("\n", elements);
+//        final URL resource = Thread.currentThread().getContextClassLoader().getResource(resourceName);
+//        if (resource == null) {
+//            throw new IOException("Resource not found: '" + resourceName + "'");
+//        }
+//        final URI uri = resource.toURI();
+//        final Path path = Paths.get(uri);
+//        final List<String> elements = Files.readAllLines(path);
+//        return String.join("\n", elements);
+
+        final InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
+        if (is == null) {
+            throw new IOException("Resource not found: '" + resourceName + "'");
+        }
+        return new String(is.readAllBytes(), StandardCharsets.UTF_8);
     }
 
     public static String classPathResourceToFullPath(String resourceName) throws URISyntaxException {
