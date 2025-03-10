@@ -26,7 +26,8 @@ public class FileUtils {
         if (is == null) {
             throw new IOException("Resource not found: '" + resourceName + "'");
         }
-        return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        return new String(is.readAllBytes(), StandardCharsets.UTF_8)
+                /*TODO*/.replace("\r", "");
     }
 
     public static String classPathResourceToFullPath(String resourceName) throws URISyntaxException {

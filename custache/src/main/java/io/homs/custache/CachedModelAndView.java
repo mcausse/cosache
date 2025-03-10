@@ -2,6 +2,8 @@ package io.homs.custache;
 
 
 import io.homs.custache.ast.Ast;
+import io.homs.custache.ast.TextAst;
+import io.homs.custache.ast.ValueAst;
 import io.homs.custache.files.TemplateLoadingStrategy;
 
 import java.util.Map;
@@ -28,10 +30,6 @@ public class CachedModelAndView {
             this.ctx = ctx;
         }
 
-        public ModelAndView(Ast templateAst) {
-            this(templateAst, new Context());
-        }
-
         public ModelAndView with(String key, Object value) {
             this.ctx.def(key, value);
             return this;
@@ -52,6 +50,11 @@ public class CachedModelAndView {
         }
 
         Ast templateAst = cachedTemplates.get(urnPart);
-        return new ModelAndView(templateAst);
+
+        Context ctx = new Context();
+        ctx.def(TextAst.TRIM_TEXT_AST, true);
+        ctx.def(ValueAst.CONTEXT_PARAM_AUTOTRIM_VALUES, false);
+
+        return new ModelAndView(templateAst, ctx);
     }
 }

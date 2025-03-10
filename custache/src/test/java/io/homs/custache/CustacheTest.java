@@ -37,11 +37,11 @@ class CustacheTest {
 
         System.out.println(result);
         assertThat(result.replaceAll("\\s+", "")).isEqualTo("<head></head><ul><li>faria-12</li><li>chucho-14</li></ul>");
-//        assertThat(result).isEqualTo("<head></head>\n" +
-//                "<ul>\n" +
-//                "    <li>faria-12</li>\n" +
-//                "    <li>chucho-14</li>\n" +
-//                "</ul>");
+        assertThat(result).isEqualTo("<head></head>\n" +
+                "<ul>\n" +
+                "    <li>faria-12</li>\n" +
+                "    <li>chucho-14</li>\n" +
+                "</ul>");
     }
 
     @Test
