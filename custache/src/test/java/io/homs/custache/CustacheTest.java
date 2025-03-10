@@ -134,15 +134,9 @@ class CustacheTest {
     @Test
     void custache_can_evaluate_maps() {
 
-        final Custache custache = new Custache();
-        Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
-                "{{model.name.1}}"
-        ));
+        var templateAst = new Custache().loadParseredTemplate(new TemplateLoadingStrategy.Template("urn", "{{model.name.1}}"));
 
-        String r = custache
-                .newEvaluation(templateAst)
-                .with("model", Map.of("name", Map.of("1", 2)))
-                .evaluate();
+        String r = new Custache().evaluate(templateAst, "model", Map.of("name", Map.of("1", 2)));
 
         assertThat(r).isEqualTo("2");
     }

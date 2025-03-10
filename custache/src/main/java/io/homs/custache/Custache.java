@@ -5,7 +5,6 @@ import io.homs.custache.ast.TextAst;
 import io.homs.custache.ast.ValueAst;
 import io.homs.custache.files.DefaultClasspathTemplateLoadingStrategy;
 import io.homs.custache.files.TemplateLoadingStrategy;
-import lombok.Value;
 
 public class Custache {
 
@@ -41,25 +40,26 @@ public class Custache {
         ctx.def(ValueAst.CONTEXT_PARAM_AUTOTRIM_VALUES, false);
     }
 
-    public Evaluation newEvaluation(Ast templateAst) {
-        Context ctx = new Context();
-        defaultContextConfiguration(ctx);
-        return new Evaluation(templateAst, ctx);
-    }
-
-    @Value
-    public static class Evaluation {
-
-        Ast templateAst;
-        Context ctx;
-
-        public Evaluation with(String key, Object value) {
-            this.ctx.def(key, value);
-            return this;
-        }
-
-        public String evaluate() {
-            return templateAst.evaluate(ctx);
-        }
-    }
+//    public Evaluation newEvaluation(Ast templateAst) {
+//        Context ctx = new Context();
+//
+//        defaultContextConfiguration(ctx);
+//        return new Evaluation(templateAst, ctx);
+//    }
+//
+//    @Value
+//    public class Evaluation {
+//
+//        Ast templateAst;
+//        Context ctx;
+//
+//        public Evaluation with(String key, Object value) {
+//            this.ctx.def(key, value);
+//            return this;
+//        }
+//
+//        public String evaluate() {
+//            return templateAst.evaluate(ctx);
+//        }
+//    }
 }
