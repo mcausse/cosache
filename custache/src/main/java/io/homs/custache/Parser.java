@@ -1,17 +1,6 @@
 package io.homs.custache;
 
-import io.homs.custache.ast.Ast;
-import io.homs.custache.ast.CommentAst;
-import io.homs.custache.ast.ExpressionAst;
-import io.homs.custache.ast.ForAst;
-import io.homs.custache.ast.IfAst;
-import io.homs.custache.ast.IfElseAst;
-import io.homs.custache.ast.IfNotAst;
-import io.homs.custache.ast.IncludeAst;
-import io.homs.custache.ast.MappingPair;
-import io.homs.custache.ast.TemplateAst;
-import io.homs.custache.ast.TextAst;
-import io.homs.custache.ast.ValueAst;
+import io.homs.custache.ast.*;
 import io.homs.custache.files.DefaultClasspathTemplateLoadingStrategy;
 import io.homs.custache.files.TemplateLoadingStrategy;
 

@@ -192,13 +192,17 @@ class CustacheTest {
     @Test
     void test_IF_ELSE() {
         final Custache custache = new Custache();
+        final String templateContent = "{{if model.dog}}{{if model.dog.name}}1{{end}}{{else}}0{{end}}" +
+                "{{if model}}1{{end}}" +
+                "{{if model.dog.dead}}1{{end}}";
         Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
-                "{{if model.dog}}{{if model.dog.name}}1{{end}}{{else}}0{{end}}"
+                templateContent
         ));
 
-        String r = custache.evaluate(templateAst, "model", Map.of("dog", Map.of("name", "duche", "age", 10)));
+        String r = custache.evaluate(templateAst, "model", Map.of("dog", Map.of("name", "duche", "dead", false)));
 
-        assertThat(r).isEqualTo("1");
+        assertThat(templateAst).hasToString(templateContent);
+        assertThat(r).isEqualTo("11");
     }
 
 //    @Test

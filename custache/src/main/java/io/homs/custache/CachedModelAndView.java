@@ -2,7 +2,6 @@ package io.homs.custache;
 
 
 import io.homs.custache.ast.Ast;
-import io.homs.custache.ast.TextAst;
 import io.homs.custache.ast.ValueAst;
 import io.homs.custache.files.TemplateLoadingStrategy;
 
@@ -55,7 +54,6 @@ public class CachedModelAndView {
 
         // TODO pq aquestes props?
         // TODO i estan duplicades
-        ctx.def(TextAst.TRIM_TEXT_AST, true);
         ctx.def(ValueAst.CONTEXT_PARAM_AUTOTRIM_VALUES, false);
 
         return new ModelAndView(templateAst, ctx);
