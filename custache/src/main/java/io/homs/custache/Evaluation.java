@@ -14,7 +14,7 @@ public class Evaluation {
     public Object evaluateToObject(Context context, List<String> idents) {
 
         if (idents.isEmpty()) {
-            throw new RuntimeException("no idents"); // TODO
+            throw new RuntimeException("no idents");
         }
         String varName = idents.get(0);
 

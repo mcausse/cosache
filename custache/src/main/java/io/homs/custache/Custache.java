@@ -1,7 +1,6 @@
 package io.homs.custache;
 
 import io.homs.custache.ast.Ast;
-import io.homs.custache.ast.ValueAst;
 import io.homs.custache.files.DefaultClasspathTemplateLoadingStrategy;
 import io.homs.custache.files.TemplateLoadingStrategy;
 
@@ -29,14 +28,10 @@ public class Custache {
     public String evaluate(Ast templateAst, String modelName, Object model) {
         Context ctx = new Context();
         ctx.def(modelName, model);
-        defaultContextConfiguration(ctx);
         String result = templateAst.evaluate(ctx);
         return result;
     }
 
-    protected void defaultContextConfiguration(Context ctx) {
-        ctx.def(ValueAst.CONTEXT_PARAM_AUTOTRIM_VALUES, false);
-    }
 
 //    public Evaluation newEvaluation(Ast templateAst) {
 //        Context ctx = new Context();

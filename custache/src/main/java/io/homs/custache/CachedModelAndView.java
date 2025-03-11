@@ -2,7 +2,6 @@ package io.homs.custache;
 
 
 import io.homs.custache.ast.Ast;
-import io.homs.custache.ast.ValueAst;
 import io.homs.custache.files.TemplateLoadingStrategy;
 
 import java.util.Map;
@@ -51,11 +50,6 @@ public class CachedModelAndView {
         Ast templateAst = cachedTemplates.get(urnPart);
 
         Context ctx = new Context();
-
-        // TODO pq aquestes props?
-        // TODO i estan duplicades
-        ctx.def(ValueAst.CONTEXT_PARAM_AUTOTRIM_VALUES, false);
-
         return new ModelAndView(templateAst, ctx);
     }
 }
