@@ -52,6 +52,9 @@ public class CachedModelAndView {
         Ast templateAst = cachedTemplates.get(urnPart);
 
         Context ctx = new Context();
+
+        // TODO pq aquestes props?
+        // TODO i estan duplicades
         ctx.def(TextAst.TRIM_TEXT_AST, true);
         ctx.def(ValueAst.CONTEXT_PARAM_AUTOTRIM_VALUES, false);
 
