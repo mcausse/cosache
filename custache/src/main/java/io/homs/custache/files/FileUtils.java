@@ -30,16 +30,16 @@ public class FileUtils {
                 /*TODO*/.replace("\r", "");
     }
 
-    public static String classPathResourceToFullPath(String resourceName) throws URISyntaxException {
-        return Path.of(ClassLoader.getSystemResource(resourceName).toURI()).toString();
-//        return Path.of(Thread.currentThread().getContextClassLoader().getResource(resourceName).toURI()).toString();
-    }
-
-    public static String loadFile(String filePath) throws IOException {
-        Path path = Paths.get(filePath);
-        Stream<String> lines = Files.lines(path);
-        String data = lines.collect(Collectors.joining("\n"));
-        lines.close();
-        return data;
-    }
+//    public static String classPathResourceToFullPath(String resourceName) throws URISyntaxException {
+//        return Path.of(ClassLoader.getSystemResource(resourceName).toURI()).toString();
+////        return Path.of(Thread.currentThread().getContextClassLoader().getResource(resourceName).toURI()).toString();
+//    }
+//
+//    public static String loadFile(String filePath) throws IOException {
+//        Path path = Paths.get(filePath);
+//        Stream<String> lines = Files.lines(path);
+//        String data = lines.collect(Collectors.joining("\n"));
+//        lines.close();
+//        return data;
+//    }
 }

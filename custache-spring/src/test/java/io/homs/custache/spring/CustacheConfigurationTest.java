@@ -17,7 +17,7 @@ class CustacheConfigurationTest {
     CachedModelAndView cachedModelAndView;
 
     @Test
-    void testGetObject() {
+    void testSimpleConfig() {
 
         String r = cachedModelAndView.getOrParse("jou")
                 .with("name", "world")
