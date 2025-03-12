@@ -40,6 +40,7 @@ import java.util.function.Predicate;
  *
  * TODO     * <fn>             ::= "{{defn" IDENT ["(" IDENT {"," IDENT} ")"]  "}}" <template> "{{end}}"
  * TODO     * <apply>          ::= "{{apply" IDENT ["(" <expression> {"," <expression>} ")"]  "}}"
+ *
  * </pre>
  */
 public class Parser {
@@ -106,10 +107,6 @@ public class Parser {
             default -> {
                 if (lexer.currentPosStartsWith("if")) {
                     yield parseIfElseAst();
-//                } else if (lexer.currentPosStartsWith("defn")) {
-//                    yield parseDefnAst();
-//                } else if (lexer.currentPosStartsWith("apply")) {
-//                    yield parseApplyAst();
                 } else {
                     // is an expression
                     yield parseValue();
@@ -117,66 +114,6 @@ public class Parser {
             }
         };
     }
-
-//    private Ast parseApplyAst() {
-//        int initialRow = lexer.getRow();
-//        int initialCol = lexer.getCol();
-//
-//        lexer.consumeChars("apply");
-//        lexer.consumeBlanks();
-//        String ident = lexer.consumeWord();
-//        lexer.consumeBlanks();
-//
-//        final List<ExpressionAst> argumentExpressions = new ArrayList<>();
-//
-//        if (lexer.currentPosStartsWith("(")) {
-//            lexer.consumeChars("(");
-//            argumentExpressions.add(parseExpression());
-//            lexer.consumeBlanks();
-//            while (lexer.getCurrentChar() == ',') {
-//                lexer.consumeChars(",");
-//                argumentExpressions.add(parseExpression());
-//                lexer.consumeBlanks();
-//            }
-//            lexer.consumeBlanks();
-//            lexer.consumeChars(")");
-//        }
-//        lexer.consumeBlanks();
-//        lexer.consumeChars("}}");
-//
-//        return new ApplyAst(templateUrn, initialRow, initialCol, ident, argumentExpressions);
-//    }
-//
-//    private DefnAst parseDefnAst() {
-//        int initialRow = lexer.getRow();
-//        int initialCol = lexer.getCol();
-//
-//        lexer.consumeChars("defn");
-//        lexer.consumeBlanks();
-//        String functionName = lexer.consumeWord();
-//        lexer.consumeBlanks();
-//
-//        final List<String> argumentNames = new ArrayList<>();
-//        if (lexer.currentPosStartsWith("(")) {
-//            lexer.consumeChars("(");
-//            lexer.consumeBlanks();
-//            argumentNames.add(lexer.consumeWord());
-//            lexer.consumeBlanks();
-//            while (lexer.getCurrentChar() == ',') {
-//                lexer.consumeChars(",");
-//                lexer.consumeBlanks();
-//                argumentNames.add(lexer.consumeWord());
-//                lexer.consumeBlanks();
-//            }
-//            lexer.consumeBlanks();
-//            lexer.consumeChars(")");
-//        }
-//        lexer.consumeBlanks();
-//        lexer.consumeChars("}}");
-//        TemplateAst body = parseTemplateUntilTag("{{end}}");
-//        lexer.consumeChars("{{end}}");
-//        return new DefnAst(templateUrn, initialRow, initialCol, functionName, argumentNames, body);
-//    }
 
     private IfElseAst parseIfElseAst() {
         int initialRow = lexer.getRow();

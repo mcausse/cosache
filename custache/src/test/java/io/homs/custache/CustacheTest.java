@@ -205,32 +205,20 @@ class CustacheTest {
         assertThat(r).isEqualTo("11");
     }
 
-//    @Test
-//    void test_macros_1() {
-//        final Custache custache = new Custache();
-//        Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
-//                "{{defn dog ()}}{{dog.name}}-{{dog.age}}{{end}}" +
-//                        "{{apply dog (dog=model.dog)}}"
-//        ));
-//
-//        String r = custache.evaluate(templateAst, "model", Map.of());
-//
-//        assertThat(r).isEqualTo("3");
-//    }
-//
-//    @Test
-//    void test_macros_2() {
-//        final Custache custache = new Custache();
-//        Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
-//                "{{def block}}<b>{{v}}</b>{{end}}" +
-//                        "{{def a}}3{{end}}" +
-//                        "{{apply block (v=a)}}"
-//        ));
-//
-//        String r = custache.evaluate(templateAst, "model", Map.of());
-//
-//        assertThat(r).isEqualTo("<b>3</b>");
-//    }
+    @Test
+    void test_for_loop_meta() {
+        final Custache custache = new Custache();
+        final String templateContent = "{{#dog dogs}}<div class=\"{{?dog-odd}}odd{{/}}\">{{dog-num}}-{{dog}}</div>{{/}}";
+        Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
+                templateContent
+        ));
 
+        String r = custache.evaluate(templateAst, "dogs", List.of(
+                "faria", "duche"
+        ));
+
+        assertThat(templateAst).hasToString(templateContent);
+        assertThat(r).isEqualTo("<div class=\"\">1-faria</div><div class=\"odd\">2-duche</div>");
+    }
 }
 
