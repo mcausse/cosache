@@ -15,15 +15,13 @@ import java.util.function.Predicate;
  * <pre>
  *
  * <template>		::= { (TEXT | <tag>) }
- * <tag>			::= <comment> | <if> | <ifnot> | <for> | <include> | <value> | <if-else>
+ * <tag>			::= <comment> | <if> | <ifnot> | <for> | <include> | <value>
  *
  * <comment> 		::= "{{!}}" TEXT "{{/}}"
- * <if>  			::= "{{?" <expression> "}}" <template> "{{/}}"
+ * <if>  			::= "{{?" <expression> "}}" <template> ["{{:}}" <template>] "{{/}}"
  * <ifnot>  		::= "{{^" <expression> "}}" <template> "{{/}}"
  * <for>  			::= "{{#" IDENT <expression> "}}" <template> "{{/}}"
  * <value> 		    ::= "{{" <expression> "}}"
- *
- * <if-else>		::= "{{if" <expression> "}}" <template> ["{{else}}" <template>] "{{end}}"
  *
  * <include>	    ::= "{{>" IDENT [<var-mapping>] "}}"
  * <var-mapping>    ::= "(" IDENT "=" <expression> {"," IDENT "=" <expression>} ")"
@@ -40,7 +38,7 @@ import java.util.function.Predicate;
  *
  * TODO     * <fn>             ::= "{{defn" IDENT ["(" IDENT {"," IDENT} ")"]  "}}" <template> "{{end}}"
  * TODO     * <apply>          ::= "{{apply" IDENT ["(" <expression> {"," <expression>} ")"]  "}}"
- *
+ * TODO     * <expression>	   ::= IDENT {"." IDENT} | "'" TEXT "'"
  * </pre>
  */
 public class Parser {
@@ -104,37 +102,8 @@ public class Parser {
             case '^' -> parseIfNotAst();
             case '#' -> parseForAst();
             case '>' -> parseInclude();
-            default -> {
-                if (lexer.currentPosStartsWith("if")) {
-                    yield parseIfElseAst();
-                } else {
-                    // is an expression
-                    yield parseValue();
-                }
-            }
+            default -> parseValue();
         };
-    }
-
-    private IfElseAst parseIfElseAst() {
-        int initialRow = lexer.getRow();
-        int initialCol = lexer.getCol();
-
-        lexer.consumeChars("if");
-        lexer.consumeBlanks();
-        ExpressionAst expressionAst = parseExpression();
-        lexer.consumeBlanks();
-        lexer.consumeChars("}}");
-        TemplateAst ifAst = parseTemplateUntil(lexer -> lexer.currentPosStartsWith("{{else}}") || lexer.currentPosStartsWith("{{end}}"));
-
-        TemplateAst elseAst = null;
-        if (lexer.currentPosStartsWith("{{else}}")) {
-            lexer.consumeChars("{{else}}");
-            elseAst = parseTemplateUntil(lexer -> lexer.currentPosStartsWith("{{end}}"));
-        }
-
-        lexer.consumeChars("{{end}}");
-
-        return new IfElseAst(templateUrn, initialRow, initialCol, expressionAst, ifAst, elseAst);
     }
 
     protected ValueAst parseValue() {
@@ -218,17 +187,26 @@ public class Parser {
         return new CommentAst(templateUrn, initialRow, initialCol, textOpt.orElse(null));
     }
 
-    protected IfAst parseIfAst() {
+    protected IfElseAst parseIfAst() {
         int initialRow = lexer.getRow();
         int initialCol = lexer.getCol();
 
         lexer.consumeChars("?");
         lexer.consumeBlanks();
         ExpressionAst expressionAst = parseExpression();
+        lexer.consumeBlanks();
         lexer.consumeChars("}}");
-        TemplateAst bodyAst = parseTemplateUntilTag("{{/}}");
+        TemplateAst ifAst = parseTemplateUntil(lexer -> lexer.currentPosStartsWith("{{:}}") || lexer.currentPosStartsWith("{{/}}"));
+
+        TemplateAst elseAst = null;
+        if (lexer.currentPosStartsWith("{{:}}")) {
+            lexer.consumeChars("{{:}}");
+            elseAst = parseTemplateUntil(lexer -> lexer.currentPosStartsWith("{{/}}"));
+        }
+
         lexer.consumeChars("{{/}}");
-        return new IfAst(templateUrn, initialRow, initialCol, expressionAst, bodyAst);
+
+        return new IfElseAst(templateUrn, initialRow, initialCol, expressionAst, ifAst, elseAst);
     }
 
     protected IfNotAst parseIfNotAst() {

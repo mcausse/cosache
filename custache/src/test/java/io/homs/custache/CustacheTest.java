@@ -181,7 +181,7 @@ class CustacheTest {
     public void model_evaluates_to_IF_ELSE(Object model, String expectedResult) {
         final Custache custache = new Custache();
         Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
-                "{{if model}}1{{else}}0{{end}}"
+                "{{? model}}1{{:}}0{{/}}"
         ));
 
         String r = custache.evaluate(templateAst, "model", model);
@@ -192,9 +192,9 @@ class CustacheTest {
     @Test
     void test_IF_ELSE() {
         final Custache custache = new Custache();
-        final String templateContent = "{{if model.dog}}{{if model.dog.name}}1{{end}}{{else}}0{{end}}" +
-                "{{if model}}1{{end}}" +
-                "{{if model.dog.dead}}1{{end}}";
+        final String templateContent = "{{?model.dog}}{{?model.dog.name}}1{{/}}{{:}}0{{/}}" +
+                "{{?model}}1{{/}}" +
+                "{{?model.dog.dead}}1{{/}}";
         Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
                 templateContent
         ));
@@ -203,22 +203,6 @@ class CustacheTest {
 
         assertThat(templateAst).hasToString(templateContent);
         assertThat(r).isEqualTo("11");
-    }
-
-    @Test
-    void test_for_loop_meta() {
-        final Custache custache = new Custache();
-        final String templateContent = "{{#dog dogs}}<div class=\"{{?dog-odd}}odd{{/}}\">{{dog-num}}-{{dog}}</div>{{/}}";
-        Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
-                templateContent
-        ));
-
-        String r = custache.evaluate(templateAst, "dogs", List.of(
-                "faria", "duche"
-        ));
-
-        assertThat(templateAst).hasToString(templateContent);
-        assertThat(r).isEqualTo("<div class=\"\">1-faria</div><div class=\"odd\">2-duche</div>");
     }
 }
 

@@ -31,9 +31,9 @@ public class IfElseAst extends Ast {
     @Override
     public String toString() {
         if (bodyElse == null) {
-            return "{{if " + expression + "}}" + bodyIf + "{{end}}";
+            return "{{?" + expression + "}}" + bodyIf + "{{/}}";
         } else {
-            return "{{if " + expression + "}}" + bodyIf + "{{else}}" + bodyElse + "{{end}}";
+            return "{{?" + expression + "}}" + bodyIf + "{{:}}" + bodyElse + "{{/}}";
         }
     }
 }
