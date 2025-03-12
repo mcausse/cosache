@@ -7,8 +7,8 @@ public class IfNotAst extends Ast {
     final ExpressionAst expression;
     final TemplateAst body;
 
-    public IfNotAst(String templateId, int col, int row, ExpressionAst expression, TemplateAst body) {
-        super(templateId, col, row);
+    public IfNotAst(String templateId, int row, int col, ExpressionAst expression, TemplateAst body) {
+        super(templateId, row, col);
         this.expression = expression;
         this.body = body;
     }
@@ -21,10 +21,5 @@ public class IfNotAst extends Ast {
         } else {
             return body.evaluate(context);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "{{^" + expression + "}}" + body + "{{/}}";
     }
 }

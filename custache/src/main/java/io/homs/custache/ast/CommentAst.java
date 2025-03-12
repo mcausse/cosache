@@ -6,21 +6,13 @@ public class CommentAst extends Ast {
 
     final TextAst textOpt;
 
-    public CommentAst(String templateId, int col, int row, TextAst textOpt) {
-        super(templateId, col, row);
+    public CommentAst(String templateId, int row, int col, TextAst textOpt) {
+        super(templateId, row, col);
         this.textOpt = textOpt;
     }
 
     @Override
     public String evaluate(Context context) {
         return "";
-    }
-
-    @Override
-    public String toString() {
-        if (textOpt == null) {
-            return "{{!}}{{/}}";
-        }
-        return "{{!}}" + textOpt + "{{/}}";
     }
 }

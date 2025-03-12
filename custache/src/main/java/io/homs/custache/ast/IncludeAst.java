@@ -5,7 +5,6 @@ import io.homs.custache.Parser;
 import io.homs.custache.files.TemplateLoadingStrategy;
 
 import java.util.List;
-import java.util.StringJoiner;
 
 public class IncludeAst extends Ast {
 
@@ -15,8 +14,8 @@ public class IncludeAst extends Ast {
     final Ast parseredTemplate;
     final List<MappingPair> mappingPairs;
 
-    public IncludeAst(String templateId, int col, int row, TemplateLoadingStrategy templateLoadingStrategy, String templateUrn, List<MappingPair> mappingPairs) {
-        super(templateId, col, row);
+    public IncludeAst(String templateId, int row, int col, TemplateLoadingStrategy templateLoadingStrategy, String templateUrn, List<MappingPair> mappingPairs) {
+        super(templateId, row, col);
         this.templateLoadingStrategy = templateLoadingStrategy;
         this.templateUrn = templateUrn;
         this.mappingPairs = mappingPairs;
@@ -33,22 +32,5 @@ public class IncludeAst extends Ast {
             contextWithMappings.def(mappingPair.getLeft(), mappingPair.getRight().evaluateToObject(context));
         }
         return parseredTemplate.evaluate(contextWithMappings);
-    }
-
-    @Override
-    public String toString() {
-        var r = new StringBuilder();
-        r.append("{{>" + templateUrn);
-        if (!mappingPairs.isEmpty()) {
-            r.append("(");
-            var j = new StringJoiner(", ");
-            for (var m : mappingPairs) {
-                j.add(m.getLeft() + "=" + m.getRight());
-            }
-            r.append(j);
-            r.append(")");
-        }
-        r.append("}}");
-        return r.toString();
     }
 }

@@ -8,8 +8,8 @@ public class IfElseAst extends Ast {
     final TemplateAst bodyIf;
     final TemplateAst bodyElse;
 
-    public IfElseAst(String templateId, int col, int row, ExpressionAst expression, TemplateAst bodyIf, TemplateAst bodyElse) {
-        super(templateId, col, row);
+    public IfElseAst(String templateId, int row, int col, ExpressionAst expression, TemplateAst bodyIf, TemplateAst bodyElse) {
+        super(templateId, row, col);
         this.expression = expression;
         this.bodyIf = bodyIf;
         this.bodyElse = bodyElse;
@@ -25,15 +25,6 @@ public class IfElseAst extends Ast {
                 return "";
             }
             return bodyElse.evaluate(context);
-        }
-    }
-
-    @Override
-    public String toString() {
-        if (bodyElse == null) {
-            return "{{?" + expression + "}}" + bodyIf + "{{/}}";
-        } else {
-            return "{{?" + expression + "}}" + bodyIf + "{{:}}" + bodyElse + "{{/}}";
         }
     }
 }

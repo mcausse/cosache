@@ -55,7 +55,7 @@ public class Lexer {
         }
         var r = getString(initialP);
         if (r.isEmpty()) {
-            throw new RuntimeException("expected to consume a word, but not; at: " + templateUrn + ":" + row + "," + col);
+            throw new CustacheException("expected to consume a word, but not; at: ", templateUrn, row, col);
         }
         return r;
     }
@@ -66,10 +66,10 @@ public class Lexer {
 
     public void consumeChars(String prefix) {
         if (p + prefix.length() > content.length()) {
-            throw new RuntimeException("expected: " + prefix + ", but eof; at: " + templateUrn + ":" + row + "," + col);
+            throw new CustacheException("expected: " + prefix + ", but eof; at: ", templateUrn, row, col);
         }
         if (!currentPosStartsWith(prefix)) {
-            throw new RuntimeException("expected: " + prefix + ", at: " + templateUrn + ":" + row + "," + col);
+            throw new CustacheException("expected: " + prefix + ", at: ", templateUrn, row, col);
         }
         for (int i = 0; i < prefix.length(); i++) {
             consumeChar();

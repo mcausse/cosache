@@ -1,16 +1,17 @@
 package io.homs.custache.ast;
 
 import io.homs.custache.Context;
+import lombok.Getter;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Getter
 public class TemplateAst extends Ast {
 
-    final List<Ast> astsList;
+    protected final List<Ast> astsList;
 
-    public TemplateAst(String templateId, int col, int row, List<Ast> astsList) {
-        super(templateId, col, row);
+    public TemplateAst(String templateId, int row, int col, List<Ast> astsList) {
+        super(templateId, row, col);
         this.astsList = astsList;
     }
 
@@ -21,10 +22,5 @@ public class TemplateAst extends Ast {
             strb.append(ast.evaluate(context));
         }
         return strb.toString();
-    }
-
-    @Override
-    public String toString() {
-        return astsList.stream().map(Object::toString).collect(Collectors.joining());
     }
 }

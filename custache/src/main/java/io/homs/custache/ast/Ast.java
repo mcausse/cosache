@@ -1,24 +1,20 @@
 package io.homs.custache.ast;
 
 import io.homs.custache.Context;
+import lombok.Getter;
 
-
+@Getter
 public abstract class Ast {
 
-    final String templateId;
+    final String templateUrn;
     final int col;
     final int row;
 
-    protected Ast(String templateId, int col, int row) {
-        this.templateId = templateId;
+    protected Ast(String templateUrn, int row, int col) {
+        this.templateUrn = templateUrn;
         this.col = col;
         this.row = row;
     }
 
     public abstract String evaluate(Context context);
-
-    @Override
-    public String toString() {
-        return templateId + ":" + col + "," + row;
-    }
 }

@@ -1,6 +1,7 @@
 package io.homs.custache.ast;
 
 import io.homs.custache.Context;
+import io.homs.custache.CustacheException;
 import io.homs.custache.Evaluation;
 
 import java.util.List;
@@ -11,8 +12,8 @@ public class ExpressionAst extends Ast {
 
     final List<String> idents;
 
-    public ExpressionAst(String templateId, int col, int row, List<String> idents) {
-        super(templateId, col, row);
+    public ExpressionAst(String templateId, int row, int col, List<String> idents) {
+        super(templateId, row, col);
         this.idents = idents;
     }
 
@@ -21,7 +22,7 @@ public class ExpressionAst extends Ast {
         try {
             return evaluation.evaluateToString(context, idents);
         } catch (Exception e) {
-            throw new RuntimeException("evaluating expression: " + this + ", at: " + super.toString(), e);
+            throw new CustacheException("evaluating expression: " + String.join(".", idents) + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
         }
     }
 
@@ -29,7 +30,7 @@ public class ExpressionAst extends Ast {
         try {
             return evaluation.evaluateToObject(context, idents);
         } catch (Exception e) {
-            throw new RuntimeException("evaluating expression: " + this + ", at: " + super.toString(), e);
+            throw new CustacheException("evaluating expression: " + String.join(".", idents) + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
         }
     }
 
@@ -37,7 +38,7 @@ public class ExpressionAst extends Ast {
         try {
             return evaluation.evaluateToBoolean(context, idents);
         } catch (Exception e) {
-            throw new RuntimeException("evaluating expression: " + this + ", at: " + super.toString(), e);
+            throw new CustacheException("evaluating expression: " + String.join(".", idents) + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
         }
     }
 
@@ -45,12 +46,7 @@ public class ExpressionAst extends Ast {
         try {
             return evaluation.evaluateToIterable(context, idents);
         } catch (Exception e) {
-            throw new RuntimeException("evaluating expression: " + this + ", at: " + super.toString(), e);
+            throw new CustacheException("evaluating expression: " + String.join(".", idents) + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
         }
-    }
-
-    @Override
-    public String toString() {
-        return String.join(".", idents);
     }
 }

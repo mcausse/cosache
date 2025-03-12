@@ -128,9 +128,7 @@ public class Parser {
                 && !lexer.currentPosStartsWith("(")) {
             lexer.consumeChar();
         }
-        if (!lexer.isNotEof()) {
-            throw new RuntimeException("expected closing }}, but eof; at " + templateUrn + ":" + initialRow + "," + initialCol);
-        }
+
         String includeString = lexer.getString(initialPos);
 
         lexer.consumeBlanks();
@@ -251,9 +249,6 @@ public class Parser {
             }
         }
 
-        if (!lexer.isNotEof()) {
-            throw new RuntimeException("unexpected eof while parsing an expression, at: " + templateUrn + ":" + initialRow + "," + initialCol);
-        }
         return new ExpressionAst(templateUrn, initialRow, initialCol, accessors);
     }
 

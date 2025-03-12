@@ -22,6 +22,7 @@ class CustacheTest {
     public static class Dog {
         String name;
         int age;
+        boolean alive;
     }
 
     @Test
@@ -31,11 +32,10 @@ class CustacheTest {
         var templateAst = sut.loadParseredTemplate("basic/test-template");
 
         String result = sut.evaluate(templateAst, "dogs", List.of(
-                new Dog("faria", 12),
-                new Dog("chucho", 14)
+                new Dog("faria", 12,true),
+                new Dog("chucho", 14,false)
         ));
 
-        System.out.println(result);
         assertThat(result.replaceAll("\\s+", "")).isEqualTo("<head></head><ul><li>faria-12</li><li>chucho-14</li></ul>");
         assertThat(result).isEqualTo("<head></head>\n" +
                 "<ul>\n" +
@@ -55,8 +55,9 @@ class CustacheTest {
 
         String result = sut.evaluate(templateAst, "dogs", List.of());
 
-        System.out.println(result);
         assertThat(result.replaceAll("\\s+", "")).isEqualTo("<head></head>Nodogs.");
+        assertThat(result).isEqualTo("<head></head>\n" +
+                "No dogs.");
     }
 
     @Test
@@ -84,7 +85,7 @@ class CustacheTest {
         var result = new Parser("test", "{{a.class.getName.toUpperCase}}").parse().evaluate(context);
 
         System.out.println(result);
-        assertThat(result.replaceAll("\\s+", "")).isEqualTo("JAVA.LANG.STRING");
+        assertThat(result).isEqualTo("JAVA.LANG.STRING");
     }
 
     @Test
@@ -94,13 +95,11 @@ class CustacheTest {
         var templateAst = sut.loadParseredTemplate("include/template");
 
         String result = sut.evaluate(templateAst, "dogs", List.of(
-                new Dog("faria", 12),
-                new Dog("chucho", 14)
+                new Dog("faria", 12, true),
+                new Dog("chucho", 14, false)
         ));
 
-        System.out.println(result);
-        assertThat(result.replaceAll("\\s+", "")).isEqualTo("faria-12chucho-14");
-//        assertThat(result).isEqualTo("faria-12chucho-14");
+        assertThat(result).isEqualTo("faria-12(alive)chucho-14");
     }
 
     private static Stream<Arguments> invalidTemplatesProvider() {
@@ -115,7 +114,7 @@ class CustacheTest {
 
     @ParameterizedTest
     @MethodSource("invalidTemplatesProvider")
-    void for_tag_needs_an_iterable_value(String template, String expectedError, String expectedNextedError) {
+    void for_tag_needs_an_iterable_value(String template, String expectedError, String expectedNestedError) {
         var sut = new Custache();
 
         try {
@@ -125,8 +124,8 @@ class CustacheTest {
             fail();
         } catch (Exception e) {
             assertThat(e).hasMessage(expectedError);
-            if (expectedNextedError != null) {
-                assertThat(e.getCause()).hasMessageContaining(expectedNextedError);
+            if (expectedNestedError != null) {
+                assertThat(e.getCause()).hasMessageContaining(expectedNestedError);
             }
         }
     }
@@ -201,8 +200,18 @@ class CustacheTest {
 
         String r = custache.evaluate(templateAst, "model", Map.of("dog", Map.of("name", "duche", "dead", false)));
 
-        assertThat(templateAst).hasToString(templateContent);
         assertThat(r).isEqualTo("11");
+    }
+
+    @Test
+    void assert_that_2_nested_loop_should_work() {
+        Ast sut = new Parser("test", "{{#i is}}{{#j js}}{{i}}{{j}}{{/}}{{/}}").parse();
+
+        var ctx = new Context();
+        ctx.def("is", List.of("a", "b", "c"));
+        ctx.def("js", List.of(1, 2, 3));
+
+        assertThat(sut.evaluate(ctx)).isEqualTo("a1a2a3b1b2b3c1c2c3");
     }
 }
 

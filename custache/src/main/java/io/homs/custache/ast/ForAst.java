@@ -8,8 +8,8 @@ public class ForAst extends Ast {
     final ExpressionAst expression;
     final TemplateAst body;
 
-    public ForAst(String templateId, int col, int row, String ident, ExpressionAst expression, TemplateAst body) {
-        super(templateId, col, row);
+    public ForAst(String templateId, int row, int col, String ident, ExpressionAst expression, TemplateAst body) {
+        super(templateId, row, col);
         this.ident = ident;
         this.expression = expression;
         this.body = body;
@@ -34,10 +34,5 @@ public class ForAst extends Ast {
             i++;
         }
         return strb.toString();
-    }
-
-    @Override
-    public String toString() {
-        return "{{#" + ident + " " + expression + "}}" + body + "{{/}}";
     }
 }
