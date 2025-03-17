@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Local Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+        
+        body {
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .panel {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+        }
+        
+        h2 {
+            margin-bottom: 15px;
+            color: #2d3748;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        ul {
+            list-style-type: none;
+        }
+        
+        li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .selected {
+            background-color: #e6f7ff;
+            border-left: 3px solid #1890ff;
+            padding-left: 10px;
+        }
+        
+        button {
+            background-color: #4c566a;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-size: 12px;
+        }
+        
+        button:hover {
+            background-color: #3b4252;
+        }
+        
+        .commit-info {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .status-staged, .status-modified, .status-untracked {
+            padding-left: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .status-staged {
+            border-left: 3px solid #52c41a;
+        }
+        
+        .status-modified {
+            border-left: 3px solid #faad14;
+        }
+        
+        .status-untracked {
+            border-left: 3px solid #f5222d;
+        }
+        
+        .conflict-warning {
+            background-color: #fff1f0;
+            color: #cf1322;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            border-left: 3px solid #cf1322;
+        }
+        
+        .file-actions {
+            margin-top: 5px;
+        }
+
+        .file {
+            font-size:small;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; margin-bottom: 20px;">Git Local Manager</h1>
+    
+    <div class="container">
+        <!-- Panel de Ramas -->
+        <div class="panel">
+            <h2>Ramas</h2>
+            <ul id="branch-list">
+                {{#branch branches}}
+                <li class="{{?branch.current}}selected{{/}}" style="display: flex; justify-content: space-between;">
+                    <span>{{branch.name}}</span>
+                    {{^ branch.current}}
+                        <button>Checkout</button>
+                    {{/}}
+                </li>
+                {{/}}
+            </ul>
+        </div>
+        
+        <!-- Panel de Commits -->
+        <div class="panel">
+            <h2>Últimos Commits</h2>
+            <ul id="commit-list">
+                <li style="display: flex; justify-content: space-between;">
+                    <strong>fix: corregido error en formulario</strong>
+                    <div class="commit-info">
+                        <span>ab7de32</span> · <span>hace 2 horas</span> · <span>Juan García</span>
+                    </div>
+                    <button>Checkout</button>
+                </li>
+                <li style="display: flex; justify-content: space-between;">
+                    <strong>feat: implementación de login OAuth</strong>
+                    <div class="commit-info">
+                        <span>7fd2e15</span> · <span>hace 1 día</span> · <span>Ana Martínez</span>
+                    </div>
+                    <button>Checkout</button>
+                </li>
+                <li style="display: flex; justify-content: space-between;">
+                    <strong>chore: actualización de dependencias</strong>
+                    <div class="commit-info">
+                        <span>c45d18f</span> · <span>hace 3 días</span> · <span>Carlos Ruiz</span>
+                    </div>
+                    <button>Checkout</button>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Panel de Estado -->
+        <div class="panel">
+            <h2>Estado de Cambios</h2>
+
+            {{? status.mergeConflict}}
+                <div class="conflict-warning">
+                    ⚠️ Estás en medio de un merge. Resuelve los conflictos para continuar.
+                </div>
+            {{/}}
+            
+            <h3 style="margin: 15px 0 10px 0;">Cambios Staged for Commit</h3>
+            <ul>
+                {{#file status.stagedFiles}}
+                    <li class="status-staged" style="display: flex; justify-content: space-between;">
+<!--                        <span>{{file.statusCode}}</span>-->
+                        <span class="file">{{file.fileName}}</span>
+                        <div class="file-actions">
+                            <button title="(use git restore --staged <file>... to unstage)">Restore</button>
+                        </div>
+                    </li>
+                {{/}}
+            </ul>
+            
+            <h3 style="margin: 15px 0 10px 0;">Cambios Modificados</h3>
+            <ul>
+                {{#file status.modifiedFiles}}
+                    <li class="status-staged" style="display: flex; justify-content: space-between;">
+<!--                        <span>{{file.statusCode}}</span>-->
+                        <span class="file">{{file.fileName}}</span>
+                        <div class="file-actions">
+                            <button title="(use git add <file>... to update what will be committed)">Add</button>
+                            <button title="(use git restore <file>... to discard changes in working directory)">Restore</button>
+                        </div>
+                    </li>
+                {{/}}
+            </ul>
+            
+            <h3 style="margin: 15px 0 10px 0;">Archivos Sin Seguimiento</h3>
+            <ul>
+                {{#file status.untrackedFiles}}
+                <li class="status-staged" style="display: flex; justify-content: space-between;">
+<!--                    <span>{{file.statusCode}}</span>-->
+                    <span class="file">{{file.fileName}}</span>
+                    <div class="file-actions">
+                        <button title="(use git add <file>... to include in what will be committed)">Add</button>
+                    </div>
+                </li>
+                {{/}}
+            </ul>
+            
+            <div style="margin-top: 20px;">
+                <button style="background-color: #389e0d;">Commit Changes</button>
+            </div>
+        </div>
+        
+        <!-- Panel de Stash -->
+        <div class="panel">
+            <h2>Stash</h2>
+            <ul id="stash-list">
+                <li>
+                    <strong>WIP: Implementación de nueva API</strong>
+                    <div class="commit-info">
+                        <span>stash@{0}</span> · <span>hace 1 día</span>
+                    </div>
+                    <div class="file-actions">
+                        <button>Apply</button>
+                        <button>Pop</button>
+                        <button>Drop</button>
+                    </div>
+                </li>
+                <li>
+                    <strong>Trabajo en progreso: refactorización de código</strong>
+                    <div class="commit-info">
+                        <span>stash@{1}</span> · <span>hace 1 semana</span>
+                    </div>
+                    <div class="file-actions">
+                        <button>Apply</button>
+                        <button>Pop</button>
+                        <button>Drop</button>
+                    </div>
+                </li>
+            </ul>
+            
+            <div style="margin-top: 20px;">
+                <button style="background-color: #389e0d;">Stash Current Changes</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

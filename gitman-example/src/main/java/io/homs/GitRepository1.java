@@ -9,13 +9,19 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
-public class GitRepository {
+//@Repository
+public class GitRepository1 {
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        var r = new GitRepository1("C:\\java\\workospace\\cosache");
+        System.out.println(r.isValidGitRepository());
+        System.out.println(r.status());
+    }
 
     private final String repositoryPath;
     private final Runtime runtime;
     
-    public GitRepository(String repositoryPath) {
+    public GitRepository1(String repositoryPath) {
         this.repositoryPath = repositoryPath;
         this.runtime = Runtime.getRuntime();
         
