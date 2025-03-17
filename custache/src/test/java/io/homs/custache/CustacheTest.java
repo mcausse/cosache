@@ -11,6 +11,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -214,6 +216,60 @@ class CustacheTest {
         ctx.def("js", List.of(1, 2, 3));
 
         assertThat(sut.evaluate(ctx)).isEqualTo("a1a2a3b1b2b3c1c2c3");
+    }
+
+    @Value
+    public static class Cat {
+        String name;
+        Date birthDate;
+    }
+
+    public static class Utils {
+        public String formatDate(Date date) {
+            var sdf = new SimpleDateFormat("dd/MM/yyyy");
+            return sdf.format(date);
+        }
+    }
+
+    @Test
+    void method_calls_test() {
+        Ast sut = new Parser(Template.of("test", "{{.utils#formatDate(cat.birthDate)}}")).parse();
+
+        var ctx = new Context();
+        ctx.def("cat", new Cat("", new Date(0L)));
+        ctx.def("utils", new Utils());
+
+        assertThat(sut.evaluate(ctx)).isEqualTo("01/01/1970");
+    }
+
+    @Test
+    void method_calls_test__now_with_spaces() {
+        Ast sut = new Parser(Template.of("test", "{{. utils # formatDate ( cat.birthDate ) }}")).parse();
+
+        var ctx = new Context();
+        ctx.def("cat", new Cat("", new Date(0L)));
+        ctx.def("utils", new Utils());
+
+        assertThat(sut.evaluate(ctx)).isEqualTo("01/01/1970");
+    }
+
+    @Test
+    void method_calls_test__now_with_a_failure() {
+        Ast sut = new Parser(Template.of("test", "{{. utils # formatDate ( cat.name ) }}")).parse();
+
+        var ctx = new Context();
+        ctx.def("cat", new Cat("", new Date(0L)));
+        ctx.def("utils", new Utils());
+
+        try {
+            sut.evaluate(ctx);
+
+            fail();
+        } catch (Exception e) {
+            assertThat(e).hasMessage("evaluating expression: io.homs.custache.CustacheTest$Utils#formatDate(), at: test:1,3")
+                    .getCause().hasMessage("Method formatDate with argument type class java.lang.String not found in class io.homs.custache.CustacheTest$Utils");
+        }
+
     }
 }
 

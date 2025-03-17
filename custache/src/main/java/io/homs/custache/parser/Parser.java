@@ -16,7 +16,7 @@ import java.util.function.Predicate;
  * <pre>
  *
  * <template>		::= { (TEXT | <tag>) }
- * <tag>			::= <comment> | <if> | <ifnot> | <for> | <include> | <value>
+ * <tag>			::= <comment> | <if> | <ifnot> | <for> | <include> | <value> | <method-call>
  *
  * <comment> 		::= "{{!}}" <template> "{{/}}"
  * <if>  			::= "{{?" <expression> "}}" <template> ["{{:}}" <template>] "{{/}}"
@@ -24,11 +24,12 @@ import java.util.function.Predicate;
  * <for>  			::= "{{#" IDENT <expression> "}}" <template> "{{/}}"
  * <value> 		    ::= "{{" <expression> "}}"
  *
+ * <method-call>    ::= "{{." <expression> "#" IDENT "(" <expression> ")" "}}"
+ *
  * <include>	    ::= "{{>" IDENT [<var-mapping>] "}}"
  * <var-mapping>    ::= "(" IDENT "=" <expression> {"," IDENT "=" <expression>} ")"
  *
  * <expression>	    ::= IDENT {"." IDENT}
- *
  *
  *
  *
@@ -106,8 +107,32 @@ public class Parser {
             case '^' -> parseIfNotAst();
             case '#' -> parseForAst();
             case '>' -> parseInclude();
+            case '.' -> parseMethodCall();
             default -> parseValue();
         };
+    }
+
+    private MethodCallAst parseMethodCall() {
+        int initialRow = lexer.getRow();
+        int initialCol = lexer.getCol();
+
+        lexer.consumeChars(".");
+        lexer.consumeBlanks();
+        ExpressionAst objectExpression = parseExpression();
+        lexer.consumeBlanks();
+        lexer.consumeChars("#");
+        lexer.consumeBlanks();
+        String methodName = lexer.consumeWord();
+        lexer.consumeBlanks();
+        lexer.consumeChars("(");
+        lexer.consumeBlanks();
+        ExpressionAst argumentExpression = parseExpression();
+        lexer.consumeBlanks();
+        lexer.consumeChars(")");
+        lexer.consumeBlanks();
+        lexer.consumeChars("}}");
+
+        return new MethodCallAst(templateUrn, initialRow, initialCol, objectExpression, methodName, argumentExpression);
     }
 
     protected ValueAst parseValue() {

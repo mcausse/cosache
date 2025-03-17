@@ -3,6 +3,7 @@ package io.homs.custache.parser.ast;
 import io.homs.custache.CustacheException;
 import io.homs.custache.eval.Context;
 import io.homs.custache.eval.Evaluation;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ public class ExpressionAst extends Ast {
 
     final Evaluation evaluation = new Evaluation();
 
+    @Getter
     final List<String> idents;
 
     public ExpressionAst(String templateId, int row, int col, List<String> idents) {

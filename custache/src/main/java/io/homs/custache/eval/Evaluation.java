@@ -99,6 +99,37 @@ public class Evaluation {
 
             throw new RuntimeException();
         }
+    }
 
+    public Object invokeMethod(Object bean, String methodName, Object argument) throws Exception {
+        if (bean == null) {
+            throw new IllegalArgumentException("Bean cannot be null");
+        }
+        if (methodName == null || methodName.isEmpty()) {
+            throw new IllegalArgumentException("Method name cannot be null or empty");
+        }
+
+        Class<?> clazz = bean.getClass();
+        Method method = findMethod(clazz, methodName, argument.getClass());
+
+        if (method == null) {
+            throw new NoSuchMethodException("Method " + methodName + " with argument type " + argument.getClass() + " not found in " + clazz);
+        }
+
+        method.setAccessible(true); // Permite acceder a métodos privados
+        return method.invoke(bean, argument);
+    }
+
+    private Method findMethod(Class<?> clazz, String methodName, Class<?> argumentType) {
+        if (clazz == null) {
+            return null;
+        }
+
+        try {
+            return clazz.getDeclaredMethod(methodName, argumentType);
+        } catch (NoSuchMethodException e) {
+            // Método no encontrado en la clase actual, buscar en la superclase
+            return findMethod(clazz.getSuperclass(), methodName, argumentType);
+        }
     }
 }
