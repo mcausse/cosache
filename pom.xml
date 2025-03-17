@@ -12,6 +12,7 @@
     <modules>
         <module>custache</module>
         <module>custache-spring</module>
+        <module>gitman-example</module>
     </modules>
 
     <properties>
