@@ -1,11 +1,9 @@
-package io.homs.custache.ast;
+package io.homs.custache.parser.ast;
 
-import io.homs.custache.Context;
-import lombok.Getter;
+import io.homs.custache.eval.Context;
 
 import java.util.List;
 
-@Getter
 public class TemplateAst extends Ast {
 
     protected final List<Ast> astsList;

@@ -1,7 +1,7 @@
 package io.homs.custache;
 
-import io.homs.custache.files.DefaultClasspathTemplateLoadingStrategy;
-import io.homs.custache.files.TemplateLoadingStrategy;
+import io.homs.custache.template.DefaultClasspathTemplateLoadingStrategy;
+import io.homs.custache.template.TemplateLoadingStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

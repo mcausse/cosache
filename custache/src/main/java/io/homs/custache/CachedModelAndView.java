@@ -1,8 +1,11 @@
 package io.homs.custache;
 
 
-import io.homs.custache.ast.Ast;
-import io.homs.custache.files.TemplateLoadingStrategy;
+import io.homs.custache.eval.Context;
+import io.homs.custache.parser.Parser;
+import io.homs.custache.parser.ast.Ast;
+import io.homs.custache.template.Template;
+import io.homs.custache.template.TemplateLoadingStrategy;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,8 +45,8 @@ public class CachedModelAndView {
 
         if (!cachedTemplates.containsKey(urnPart)) {
 
-            TemplateLoadingStrategy.Template template = templateLoadingStrategy.loadTemplate(urnPart);
-            Ast templateAst = new Parser(templateLoadingStrategy, template.getFullTemplateUrn(), template.getTemplateContent()).parse();
+            Template template = templateLoadingStrategy.loadTemplate(urnPart);
+            Ast templateAst = new Parser(templateLoadingStrategy, template).parse();
             cachedTemplates.put(urnPart, templateAst);
         }
 

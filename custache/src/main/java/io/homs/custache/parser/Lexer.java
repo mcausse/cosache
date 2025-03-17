@@ -1,5 +1,6 @@
-package io.homs.custache;
+package io.homs.custache.parser;
 
+import io.homs.custache.CustacheException;
 import lombok.Getter;
 
 @Getter

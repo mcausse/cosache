@@ -5,10 +5,10 @@
 
 ```xml
     <dependency>
-        <groupId>io.homs</groupId>
-        <artifactId>custache-spring</artifactId>
-        <version>0.0.2</version>
-    </dependency>
+    <groupId>io.homs</groupId>
+    <artifactId>custache-spring</artifactId>
+    <version>0.0.2</version>
+</dependency>
 ```
 
 ```java
@@ -24,6 +24,19 @@ public class CustacheController {
 
     @Autowired
     CachedModelAndView cachedModelAndView;
+    
+    [...]
+
+    @GetMapping
+    public String index() {
+
+        [...]
+
+        return cachedModelAndView.getOrParse("gitinillo-template.html")
+                .with("repositories", repositoryInfos)
+                .with("servlet-context", "/" + REPOSITORIES_BASE_URL)
+                .evaluate();
+    }
 ```
 
 ### Custache config

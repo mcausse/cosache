@@ -1,7 +1,7 @@
-package io.homs.custache.ast;
+package io.homs.custache.parser.ast;
 
-import io.homs.custache.Context;
-import io.homs.custache.Evaluation;
+import io.homs.custache.eval.Context;
+import io.homs.custache.eval.Evaluation;
 
 public class TextAst extends Ast {
 

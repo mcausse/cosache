@@ -1,8 +1,9 @@
-package io.homs.custache;
+package io.homs.custache.parser;
 
-import io.homs.custache.ast.*;
-import io.homs.custache.files.DefaultClasspathTemplateLoadingStrategy;
-import io.homs.custache.files.TemplateLoadingStrategy;
+import io.homs.custache.parser.ast.*;
+import io.homs.custache.template.DefaultClasspathTemplateLoadingStrategy;
+import io.homs.custache.template.Template;
+import io.homs.custache.template.TemplateLoadingStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.function.Predicate;
  * <template>		::= { (TEXT | <tag>) }
  * <tag>			::= <comment> | <if> | <ifnot> | <for> | <include> | <value>
  *
- * <comment> 		::= "{{!}}" TEXT "{{/}}"
+ * <comment> 		::= "{{!}}" <template> "{{/}}"
  * <if>  			::= "{{?" <expression> "}}" <template> ["{{:}}" <template>] "{{/}}"
  * <ifnot>  		::= "{{^" <expression> "}}" <template> "{{/}}"
  * <for>  			::= "{{#" IDENT <expression> "}}" <template> "{{/}}"
@@ -27,6 +28,8 @@ import java.util.function.Predicate;
  * <var-mapping>    ::= "(" IDENT "=" <expression> {"," IDENT "=" <expression>} ")"
  *
  * <expression>	    ::= IDENT {"." IDENT}
+ *
+ *
  *
  *
  * XXXX millorar els includes: fer alias?
@@ -39,6 +42,7 @@ import java.util.function.Predicate;
  * TODO     * <fn>             ::= "{{defn" IDENT ["(" IDENT {"," IDENT} ")"]  "}}" <template> "{{end}}"
  * TODO     * <apply>          ::= "{{apply" IDENT ["(" <expression> {"," <expression>} ")"]  "}}"
  * TODO     * <expression>	   ::= IDENT {"." IDENT} | "'" TEXT "'"
+ * TODO     * <switch>         ::= "{{switch" <expression> "}}" <template> {"{{case" <expression> "}}" <template>} "{{end}}"
  * </pre>
  */
 public class Parser {
@@ -47,14 +51,14 @@ public class Parser {
     final String templateUrn;
     final Lexer lexer;
 
-    public Parser(TemplateLoadingStrategy templateLoadingStrategy, String templateUrn, String template) {
+    public Parser(TemplateLoadingStrategy templateLoadingStrategy, Template template) {
         this.templateLoadingStrategy = templateLoadingStrategy;
-        this.templateUrn = templateUrn;
-        this.lexer = new Lexer(templateUrn, template);
+        this.templateUrn = template.getFullTemplateUrn();
+        this.lexer = new Lexer(templateUrn, template.getTemplateContent());
     }
 
-    public Parser(String templateUrn, String template) {
-        this(new DefaultClasspathTemplateLoadingStrategy(), templateUrn, template);
+    public Parser(Template template) {
+        this(new DefaultClasspathTemplateLoadingStrategy(), template);
     }
 
     public Ast parse() {
@@ -179,10 +183,10 @@ public class Parser {
         int initialCol = lexer.getCol();
 
         lexer.consumeChars("!}}");
-        Optional<TextAst> textOpt = parseTextAst();
+        TemplateAst ignoredBody = parseTemplateUntilTag("{{/}}");
         lexer.consumeChars("{{/}}");
 
-        return new CommentAst(templateUrn, initialRow, initialCol, textOpt.orElse(null));
+        return new CommentAst(templateUrn, initialRow, initialCol);
     }
 
     protected IfElseAst parseIfAst() {

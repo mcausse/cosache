@@ -1,5 +1,6 @@
-package io.homs.custache.files;
+package io.homs.custache.template;
 
+import io.homs.custache.util.FileUtils;
 import lombok.SneakyThrows;
 
 import java.io.IOException;

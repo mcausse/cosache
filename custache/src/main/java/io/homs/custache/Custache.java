@@ -1,8 +1,11 @@
 package io.homs.custache;
 
-import io.homs.custache.ast.Ast;
-import io.homs.custache.files.DefaultClasspathTemplateLoadingStrategy;
-import io.homs.custache.files.TemplateLoadingStrategy;
+import io.homs.custache.eval.Context;
+import io.homs.custache.parser.Parser;
+import io.homs.custache.parser.ast.Ast;
+import io.homs.custache.template.DefaultClasspathTemplateLoadingStrategy;
+import io.homs.custache.template.Template;
+import io.homs.custache.template.TemplateLoadingStrategy;
 
 public class Custache {
 
@@ -17,12 +20,12 @@ public class Custache {
     }
 
     public Ast loadParseredTemplate(String templateUrn) {
-        TemplateLoadingStrategy.Template loadedTemplate = templateLoadingStrategy.loadTemplate(templateUrn);
+        Template loadedTemplate = templateLoadingStrategy.loadTemplate(templateUrn);
         return loadParseredTemplate(loadedTemplate);
     }
 
-    public Ast loadParseredTemplate(TemplateLoadingStrategy.Template loadedTemplate) {
-        return new Parser(templateLoadingStrategy, loadedTemplate.getFullTemplateUrn(), loadedTemplate.getTemplateContent()).parse();
+    public Ast loadParseredTemplate(Template loadedTemplate) {
+        return new Parser(templateLoadingStrategy, loadedTemplate).parse();
     }
 
     public String evaluate(Ast templateAst, String modelName, Object model) {
@@ -31,28 +34,4 @@ public class Custache {
         String result = templateAst.evaluate(ctx);
         return result;
     }
-
-
-//    public Evaluation newEvaluation(Ast templateAst) {
-//        Context ctx = new Context();
-//
-//        defaultContextConfiguration(ctx);
-//        return new Evaluation(templateAst, ctx);
-//    }
-//
-//    @Value
-//    public class Evaluation {
-//
-//        Ast templateAst;
-//        Context ctx;
-//
-//        public Evaluation with(String key, Object value) {
-//            this.ctx.def(key, value);
-//            return this;
-//        }
-//
-//        public String evaluate() {
-//            return templateAst.evaluate(ctx);
-//        }
-//    }
 }

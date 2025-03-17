@@ -1,4 +1,4 @@
-package io.homs.custache.ast;
+package io.homs.custache.parser.ast;
 
 import lombok.Value;
 

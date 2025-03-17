@@ -1,8 +1,9 @@
-package io.homs.custache.ast;
+package io.homs.custache.parser.ast;
 
-import io.homs.custache.Context;
-import io.homs.custache.Parser;
-import io.homs.custache.files.TemplateLoadingStrategy;
+import io.homs.custache.eval.Context;
+import io.homs.custache.parser.Parser;
+import io.homs.custache.template.Template;
+import io.homs.custache.template.TemplateLoadingStrategy;
 
 import java.util.List;
 
@@ -20,8 +21,8 @@ public class IncludeAst extends Ast {
         this.templateUrn = templateUrn;
         this.mappingPairs = mappingPairs;
 
-        TemplateLoadingStrategy.Template loadedTemplate = templateLoadingStrategy.loadTemplate(templateUrn);
-        Parser parser = new Parser(templateLoadingStrategy, loadedTemplate.getFullTemplateUrn(), loadedTemplate.getTemplateContent());
+        Template loadedTemplate = templateLoadingStrategy.loadTemplate(templateUrn);
+        Parser parser = new Parser(templateLoadingStrategy, loadedTemplate);
         this.parseredTemplate = parser.parse();
     }
 

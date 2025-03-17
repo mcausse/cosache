@@ -1,7 +1,9 @@
 package io.homs.custache;
 
-import io.homs.custache.ast.Ast;
-import io.homs.custache.files.TemplateLoadingStrategy;
+import io.homs.custache.eval.Context;
+import io.homs.custache.parser.Parser;
+import io.homs.custache.parser.ast.Ast;
+import io.homs.custache.template.Template;
 import lombok.Value;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,8 +34,8 @@ class CustacheTest {
         var templateAst = sut.loadParseredTemplate("basic/test-template");
 
         String result = sut.evaluate(templateAst, "dogs", List.of(
-                new Dog("faria", 12,true),
-                new Dog("chucho", 14,false)
+                new Dog("faria", 12, true),
+                new Dog("chucho", 14, false)
         ));
 
         assertThat(result.replaceAll("\\s+", "")).isEqualTo("<head></head><ul><li>faria-12</li><li>chucho-14</li></ul>");
@@ -82,7 +84,7 @@ class CustacheTest {
         var context = new Context();
         context.def("a", "b");
 
-        var result = new Parser("test", "{{a.class.getName.toUpperCase}}").parse().evaluate(context);
+        var result = new Parser(Template.of("test", "{{a.class.getName.toUpperCase}}")).parse().evaluate(context);
 
         System.out.println(result);
         assertThat(result).isEqualTo("JAVA.LANG.STRING");
@@ -118,7 +120,7 @@ class CustacheTest {
         var sut = new Custache();
 
         try {
-            var templateAst = sut.loadParseredTemplate(new TemplateLoadingStrategy.Template("urn", template));
+            var templateAst = sut.loadParseredTemplate(new Template("urn", template));
             sut.evaluate(templateAst, "jou", 1);
 
             fail();
@@ -133,7 +135,7 @@ class CustacheTest {
     @Test
     void custache_can_evaluate_maps() {
 
-        var templateAst = new Custache().loadParseredTemplate(new TemplateLoadingStrategy.Template("urn", "{{model.name.1}}"));
+        var templateAst = new Custache().loadParseredTemplate(new Template("urn", "{{model.name.1}}"));
 
         String r = new Custache().evaluate(templateAst, "model", Map.of("name", Map.of("1", 2)));
 
@@ -166,7 +168,7 @@ class CustacheTest {
     @MethodSource("model_evaluates_to_Provider")
     public void model_evaluates_to(Object model, String expectedResult) {
         final Custache custache = new Custache();
-        Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
+        Ast templateAst = custache.loadParseredTemplate(new Template("testurn",
                 "{{?model}}1{{/}}{{^model}}0{{/}}"
         ));
 
@@ -179,7 +181,7 @@ class CustacheTest {
     @MethodSource("model_evaluates_to_Provider")
     public void model_evaluates_to_IF_ELSE(Object model, String expectedResult) {
         final Custache custache = new Custache();
-        Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
+        Ast templateAst = custache.loadParseredTemplate(new Template("testurn",
                 "{{? model}}1{{:}}0{{/}}"
         ));
 
@@ -194,7 +196,7 @@ class CustacheTest {
         final String templateContent = "{{?model.dog}}{{?model.dog.name}}1{{/}}{{:}}0{{/}}" +
                 "{{?model}}1{{/}}" +
                 "{{?model.dog.dead}}1{{/}}";
-        Ast templateAst = custache.loadParseredTemplate(new TemplateLoadingStrategy.Template("testurn",
+        Ast templateAst = custache.loadParseredTemplate(new Template("testurn",
                 templateContent
         ));
 
@@ -205,7 +207,7 @@ class CustacheTest {
 
     @Test
     void assert_that_2_nested_loop_should_work() {
-        Ast sut = new Parser("test", "{{#i is}}{{#j js}}{{i}}{{j}}{{/}}{{/}}").parse();
+        Ast sut = new Parser(Template.of("test", "{{#i is}}{{#j js}}{{i}}{{j}}{{/}}{{/}}")).parse();
 
         var ctx = new Context();
         ctx.def("is", List.of("a", "b", "c"));
