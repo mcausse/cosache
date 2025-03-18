@@ -1,4 +1,4 @@
-package io.homs;
+package io.homs.gitman;
 
 import io.homs.custache.spring.CustacheConfiguration;
 import org.springframework.boot.SpringApplication;
@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication
 public class GitmanApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(GitmanApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(GitmanApplication.class, args);
+    }
 
 }

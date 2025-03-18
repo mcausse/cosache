@@ -285,11 +285,16 @@
 <body>
 <header>
     <h1>Git Control Panel</h1>
-    <select id="repository" style="max-width: 400px">
-        <option>Repo 1</option>
-        <option>Repo 2</option>
-        <option>Repo 3</option>
-    </select>
+
+    <span>
+        <label for="repository" style="color:white; font-size:12px">Repository path:</label>
+        <select id="repository" style="max-width: 400px">
+            {{#repositoryPath repositoryPaths}}
+                <option>{{repositoryPath}}</option>
+            {{/}}
+        </select>
+    </span>
+
 </header>
 <main>
     <div class="panel left-panel">

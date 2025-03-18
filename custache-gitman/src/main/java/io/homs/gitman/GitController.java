@@ -1,4 +1,4 @@
-package io.homs;
+package io.homs.gitman;
 
 import io.homs.custache.CachedModelAndView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +23,13 @@ public class GitController {
     @GetMapping
     public String index() {
 
-        // TODO
         List<GitLocalManagerRepository.Branch> branches = gitRepository.getBranches();
-
         GitLocalManagerRepository.GitStatus status = gitRepository.getStatus();
-
         List<GitLocalManagerRepository.Commit> commits = gitRepository.getRecentCommits(10);
-
         List<GitLocalManagerRepository.StashEntry> stashes = gitRepository.getStashes();
 
         return cachedModelAndView.getOrParse("git-local-manager.html")
+                .with("repositoryPaths", gitRepository.getRepositoryPaths())
                 .with("branches", branches)
                 .with("status", status)
                 .with("commits", commits)

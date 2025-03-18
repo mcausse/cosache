@@ -1,4 +1,4 @@
-package io.homs;
+package io.homs.gitman;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
 @Repository
 public class GitLocalManagerRepository {
 
@@ -22,12 +23,14 @@ public class GitLocalManagerRepository {
 //    }
 
 
-    final String repositoryPath;
+    private final List<String> repositoryPaths;
 
-    public GitLocalManagerRepository(@Value("${git.repository.path}") String repositoryPath) {
-        this.repositoryPath = repositoryPath;
+    private final String currentRepositoryPath;
+
+    public GitLocalManagerRepository(@Value("${git.repository.paths}") List<String> repositoryPaths) {
+        this.repositoryPaths = repositoryPaths;
+        this.currentRepositoryPath = repositoryPaths.get(0);
     }
-
 
     public List<Branch> getBranches() {
         List<Branch> branches = new ArrayList<>();
@@ -292,7 +295,7 @@ public class GitLocalManagerRepository {
 
     private String executeCommand(String... command) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.directory(new java.io.File(repositoryPath));
+        processBuilder.directory(new java.io.File(currentRepositoryPath));
         Process process = processBuilder.start();
 
         StringBuilder output = new StringBuilder();
