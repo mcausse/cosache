@@ -342,10 +342,7 @@ public class GitLocalManagerRepository {
         }
 
         LOG.info("<- " + output);
-        String outputStr = output.toString().trim();
-        String errorStr = error.toString().trim();
-
-        return new CommandResult(errorStr.isEmpty(), outputStr, errorStr);
+        return new CommandResult(process.exitValue() == 0, output.toString().trim(), error.toString().trim());
     }
 
     // Entity classes
@@ -404,6 +401,10 @@ public class GitLocalManagerRepository {
 
         public void setMergeConflict(boolean mergeConflict) {
             this.mergeConflict = mergeConflict;
+        }
+
+        public int getTotalFiles() {
+            return stagedFiles.size() + modifiedFiles.size() + untrackedFiles.size();
         }
 
         @Override

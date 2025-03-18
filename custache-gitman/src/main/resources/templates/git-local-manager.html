@@ -23,6 +23,8 @@
             success: function(respuesta) {
                 // Maneja la respuesta exitosa del backend
                 console.log('Respuesta del backend:', respuesta);
+                $("body").css("cursor", "progress");
+                location.reload();
             },
             error: function(error) {
                 // Maneja los errores de la llamada
@@ -124,11 +126,19 @@
         {{/}}
 
         <div style="display: flex; align-items: center; justify-content: space-between;">
-            <button class=""><big>+</big> Add all</button>
+            {{?status.totalFiles}}
+                <button><big>+</big> Add all</button>
+            {{:}}
+                <button disabled><big>+</big> Add all</button>
+            {{/}}
 
             <div style="display: flex; align-items: center;">
                 <input type="text" placeholder="Commit message" style="width: 300px; display: inline-block; margin-bottom: 0">
-                <button class="important"><big>↷</big> Commit</button>
+                {{?status.totalFiles}}
+                    <button class="important"><big>↷</big> Commit</button>
+                {{:}}
+                    <button disabled><big>↷</big> Commit</button>
+                {{/}}
                 &nbsp;
                 <button class="important2"><big>⭱</big> Push</button>
             </div>

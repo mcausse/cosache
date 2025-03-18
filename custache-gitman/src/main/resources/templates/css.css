@@ -283,12 +283,14 @@ select:focus {
     border-radius: 10px;
     font-family: monospace, monospace;
     font-size: 12px;
+    white-space: pre;
 }
 
 .code {
     font-family: monospace, monospace;
     font-size: 14px;
 }
+
 
 
 
