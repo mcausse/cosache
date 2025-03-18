@@ -1,5 +1,6 @@
 package io.homs;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -70,7 +71,7 @@ public class GitLocalManagerRepository {
                     String message = parts[1];
                     String author = parts[2];
 
-                    // ...|5 hours ago| (HEAD -> feature/NPLH-11301-WIBU-modules-skeleton, origin/feature/NPLH-11301-WIBU-modules-skeleton)
+                    // ...| (HEAD -> feature/NPLH-11301-WIBU-modules-skeleton, origin/feature/NPLH-11301-WIBU-modules-skeleton) |5 hours ago
                     String branchRefsStr = parts[3].trim();
                     List<String> branchRefs = null;
                     if (!branchRefsStr.trim().isEmpty()) {
@@ -312,6 +313,7 @@ public class GitLocalManagerRepository {
     }
 
     // Entity classes
+    @Getter
     public static class Branch {
         private final String name;
         private final boolean current;
@@ -319,14 +321,6 @@ public class GitLocalManagerRepository {
         public Branch(String name, boolean current) {
             this.name = name;
             this.current = current;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public boolean isCurrent() {
-            return current;
         }
 
         @Override
@@ -338,6 +332,7 @@ public class GitLocalManagerRepository {
         }
     }
 
+    @Getter
     public static class Commit {
         private final String hash;
         private final String message;
@@ -353,26 +348,6 @@ public class GitLocalManagerRepository {
             this.branchRefs = branchRefs;
         }
 
-        public String getHash() {
-            return hash;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public String getAuthor() {
-            return author;
-        }
-
-        public String getTimeAgo() {
-            return timeAgo;
-        }
-
-        public List<String> getBranchRefs() {
-            return branchRefs;
-        }
-
         @Override
         public String toString() {
             return "Commit{" +
@@ -384,30 +359,15 @@ public class GitLocalManagerRepository {
         }
     }
 
+    @Getter
     public static class GitStatus {
         private boolean mergeConflict = false;
         private final List<FileStatus> stagedFiles = new ArrayList<>();
         private final List<FileStatus> modifiedFiles = new ArrayList<>();
         private final List<FileStatus> untrackedFiles = new ArrayList<>();
 
-        public boolean isMergeConflict() {
-            return mergeConflict;
-        }
-
         public void setMergeConflict(boolean mergeConflict) {
             this.mergeConflict = mergeConflict;
-        }
-
-        public List<FileStatus> getStagedFiles() {
-            return stagedFiles;
-        }
-
-        public List<FileStatus> getModifiedFiles() {
-            return modifiedFiles;
-        }
-
-        public List<FileStatus> getUntrackedFiles() {
-            return untrackedFiles;
         }
 
         @Override
@@ -421,6 +381,7 @@ public class GitLocalManagerRepository {
         }
     }
 
+    @Getter
     public static class FileStatus {
         private final String fileName;
         private final String statusCode;
@@ -428,14 +389,6 @@ public class GitLocalManagerRepository {
         public FileStatus(String fileName, String statusCode) {
             this.fileName = fileName;
             this.statusCode = statusCode;
-        }
-
-        public String getFileName() {
-            return fileName;
-        }
-
-        public String getStatusCode() {
-            return statusCode;
         }
 
 
@@ -448,6 +401,7 @@ public class GitLocalManagerRepository {
         }
     }
 
+    @Getter
     public static class StashEntry {
         private final String id;
         private final String description;
@@ -457,18 +411,6 @@ public class GitLocalManagerRepository {
             this.id = id;
             this.description = description;
             this.timeAgo = timeAgo;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getTimeAgo() {
-            return timeAgo;
         }
 
         @Override

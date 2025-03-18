@@ -30,10 +30,13 @@ public class GitController {
 
         List<GitLocalManagerRepository.Commit> commits = gitRepository.getRecentCommits(10);
 
+        List<GitLocalManagerRepository.StashEntry> stashes = gitRepository.getStashes();
+
         return cachedModelAndView.getOrParse("git-local-manager.html")
                 .with("branches", branches)
                 .with("status", status)
                 .with("commits", commits)
+                .with("stashes", stashes)
                 .with("servlet-context", "/" + BASE_URL)
                 .evaluate();
     }

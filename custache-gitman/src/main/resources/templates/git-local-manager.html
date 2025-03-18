@@ -58,7 +58,7 @@
             padding: 0;
         }
         .branch {
-            cursor: pointer;
+/*            cursor: pointer;*/
             padding: 5px 10px;
         }
         .branch:nth-child(odd) {
@@ -296,7 +296,14 @@
         <h2>Branches</h2>
         <ul>
             {{#branch branches}}
-            <li class="branch {{?branch.current}}active{{/}} text">{{branch.name}}</li>
+            <li class="branch {{?branch.current}}active{{/}} text file-status">
+                <span>{{branch.name}}</span>
+                <span>
+                    {{^branch.current}}
+                        <button class="button-chip">Checkout</button>
+                    {{/}}
+                </span>
+            </li>
             {{/}}
         </ul>
     </div>
@@ -314,43 +321,43 @@
         <br/>
 
         {{? status.stagedFiles}}
-        <div class="section-staged">
-            {{#file status.stagedFiles}}
-            <div class="file-status">
-                <span class="text">{{file.fileName}}</span>
-                <div class="file-actions">
-                    <button class="button-chip" title="(use git restore --staged <file>... to unstage)">Restore</button>
+            <div class="section-staged">
+                {{#file status.stagedFiles}}
+                <div class="file-status">
+                    <span class="text">{{file.fileName}}</span>
+                    <div class="file-actions">
+                        <button class="button-chip" title="(use git restore --staged <file>... to unstage)">Restore</button>
+                    </div>
                 </div>
+                {{/}}
             </div>
-            {{/}}
-        </div>
         {{/}}
 
         {{? status.modifiedFiles}}
-        <div class="section-modified">
-            {{#file status.modifiedFiles}}
-            <div class="file-status">
-                <span class="text">{{file.fileName}}</span>
-                <div class="file-actions">
-                    <button class="button-chip" title="(use git add <file>... to update what will be committed)" style="display: inline-block;">Add</button>
-                    <button class="button-chip" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;">Restore</button>
+            <div class="section-modified">
+                {{#file status.modifiedFiles}}
+                <div class="file-status">
+                    <span class="text">{{file.fileName}}</span>
+                    <div class="file-actions">
+                        <button class="button-chip" title="(use git add <file>... to update what will be committed)" style="display: inline-block;">Add</button>
+                        <button class="button-chip" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;">Restore</button>
+                    </div>
                 </div>
+                {{/}}
             </div>
-            {{/}}
-        </div>
         {{/}}
 
         {{? status.untrackedFiles}}
-        <div class="section-untracked">
-            {{#file status.untrackedFiles}}
-            <div class="file-status">
-                <span class="text">{{file.fileName}}</span>
-                <div class="file-actions">
-                    <button class="button-chip" title="(use git add <file>... to include in what will be committed)">Add</button>
+            <div class="section-untracked">
+                {{#file status.untrackedFiles}}
+                <div class="file-status">
+                    <span class="text">{{file.fileName}}</span>
+                    <div class="file-actions">
+                        <button class="button-chip" title="(use git add <file>... to include in what will be committed)">Add</button>
+                    </div>
                 </div>
+                {{/}}
             </div>
-            {{/}}
-        </div>
         {{/}}
 
         <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -399,7 +406,11 @@
 
 
 
-
+{{!}}
+    private final String id;
+    private final String description;
+    private final String timeAgo;
+{{/}}
 
     <div class="panel right-panel">
         <h2>Stashes</h2>
@@ -408,20 +419,21 @@
         <br/>
 
         <ul>
+            {{#stash stashes}}
             <li class="stash">
-                <span>Stash 1</span>
+                <span>
+                    {{stash.id}}<br/>
+                    <small>
+                        <i>({{stash.description}})</i>
+                        - {{stash.timeAgo}}
+                    </small>
+                </span>
                 <div class="stash-actions">
                     <button><big>←</big> Apply</button>
                     <button><big>↤</big> Pop</button>
                 </div>
             </li>
-            <li class="stash">
-                <span>Stash 2</span>
-                <div class="stash-actions">
-                    <button>Apply</button>
-                    <button>Pop</button>
-                </div>
-            </li>
+            {{/}}
         </ul>
     </div>
 </main>
