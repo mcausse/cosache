@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,60 +37,47 @@ public class GitLocalManagerRepository {
 
     public List<Branch> getBranches() {
         List<Branch> branches = new ArrayList<>();
-        String currentBranch = getCurrentBranch();
+//        String currentBranch = getCurrentBranch();
 
-        try {
-            String output = executeCommandThrow("git", "branch");
-            for (String line : output.split("\n")) {
-                line = line.trim();
-                String branchName = line.startsWith("*") ? line.substring(2) : line;
-                boolean isSelected = line.startsWith("*");
-                branches.add(new Branch(branchName, isSelected));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        String output = executeCommandThrow("git", "branch");
+        for (String line : output.split("\n")) {
+            line = line.trim();
+            String branchName = line.startsWith("*") ? line.substring(2) : line;
+            boolean isSelected = line.startsWith("*");
+            branches.add(new Branch(branchName, isSelected));
         }
 
         return branches;
     }
 
     public String getCurrentBranch() {
-        try {
-            return executeCommandThrow("git", "rev-parse", "--abbrev-ref", "HEAD").trim();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
+        return executeCommandThrow("git", "rev-parse", "--abbrev-ref", "HEAD").trim();
     }
 
     public List<Commit> getRecentCommits(int limit) {
         List<Commit> commits = new ArrayList<>();
 
-        try {
-            String output = executeCommandThrow("git", "log", "--format=%H|%s|%ae|%d|%ar", "-n", String.valueOf(limit));
-            for (String line : output.split("\n")) {
-                if (line.trim().isEmpty()) continue;
+        String output = executeCommandThrow("git", "log", "--format=%H|%s|%ae|%d|%ar", "-n", String.valueOf(limit));
+        for (String line : output.split("\n")) {
+            if (line.trim().isEmpty()) continue;
 
-                String[] parts = line.split("\\|");
-                if (parts.length == 5) {
-                    String hash = parts[0];
-                    String message = parts[1];
-                    String author = parts[2];
+            String[] parts = line.split("\\|");
+            if (parts.length == 5) {
+                String hash = parts[0];
+                String message = parts[1];
+                String author = parts[2];
 
-                    // ...| (HEAD -> feature/NPLH-11301-WIBU-modules-skeleton, origin/feature/NPLH-11301-WIBU-modules-skeleton) |5 hours ago
-                    String branchRefsStr = parts[3].trim();
-                    List<String> branchRefs = null;
-                    if (!branchRefsStr.trim().isEmpty()) {
-                        branchRefs = Arrays.asList(branchRefsStr.substring(1, branchRefsStr.length() - 1).split(", "));
-                    }
-
-                    String timeAgo = parts[4];
-
-                    commits.add(new Commit(hash, message, author, timeAgo, branchRefs));
+                // ...| (HEAD -> feature/NPLH-11301-WIBU-modules-skeleton, origin/feature/NPLH-11301-WIBU-modules-skeleton) |5 hours ago
+                String branchRefsStr = parts[3].trim();
+                List<String> branchRefs = null;
+                if (!branchRefsStr.trim().isEmpty()) {
+                    branchRefs = Arrays.asList(branchRefsStr.substring(1, branchRefsStr.length() - 1).split(", "));
                 }
+
+                String timeAgo = parts[4];
+
+                commits.add(new Commit(hash, message, author, timeAgo, branchRefs));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return commits;
@@ -134,30 +120,26 @@ public class GitLocalManagerRepository {
     public GitStatus getStatus() {
         GitStatus status = new GitStatus();
 
-        try {
-            String output = executeCommandThrow("git", "status", "--porcelain");
-            String mergeStatus = executeCommandThrow("git", "status");
+        String output = executeCommandThrow("git", "status", "--porcelain");
+        String mergeStatus = executeCommandThrow("git", "status");
 
-            if (mergeStatus.contains("merge") && (mergeStatus.contains("in progress") || mergeStatus.contains("conflict"))) {
-                status.setMergeConflict(true);
+        if (mergeStatus.contains("merge") && (mergeStatus.contains("in progress") || mergeStatus.contains("conflict"))) {
+            status.setMergeConflict(true);
+        }
+
+        for (String line : output.split("\n")) {
+            if (line.trim().isEmpty()) continue;
+
+            String statusCode = line.substring(0, 2);
+            String fileName = line.substring(3);
+
+            if (statusCode.charAt(0) == 'M' || statusCode.charAt(0) == 'A' || statusCode.charAt(0) == 'D' || statusCode.charAt(0) == 'R') {
+                status.getStagedFiles().add(new FileStatus(fileName, statusCode));
+            } else if (statusCode.charAt(1) == 'M' || statusCode.equals(" D")) {
+                status.getModifiedFiles().add(new FileStatus(fileName, statusCode));
+            } else if (statusCode.equals("??")) {
+                status.getUntrackedFiles().add(new FileStatus(fileName, statusCode));
             }
-
-            for (String line : output.split("\n")) {
-                if (line.trim().isEmpty()) continue;
-
-                String statusCode = line.substring(0, 2);
-                String fileName = line.substring(3);
-
-                if (statusCode.charAt(0) == 'M' || statusCode.charAt(0) == 'A' || statusCode.charAt(0) == 'D' || statusCode.charAt(0) == 'R') {
-                    status.getStagedFiles().add(new FileStatus(fileName, statusCode));
-                } else if (statusCode.charAt(1) == 'M' || statusCode.equals(" D")) {
-                    status.getModifiedFiles().add(new FileStatus(fileName, statusCode));
-                } else if (statusCode.equals("??")) {
-                    status.getUntrackedFiles().add(new FileStatus(fileName, statusCode));
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return status;
@@ -166,135 +148,77 @@ public class GitLocalManagerRepository {
     public List<StashEntry> getStashes() {
         List<StashEntry> stashes = new ArrayList<>();
 
-        try {
-            String output = executeCommandThrow("git", "stash", "list");
-            for (String line : output.split("\n")) {
-                if (line.trim().isEmpty()) continue;
+        String output = executeCommandThrow("git", "stash", "list");
+        for (String line : output.split("\n")) {
+            if (line.trim().isEmpty()) continue;
 
-                // Parse stash format: stash@{0}: WIP on branch: commit message
-                int colonIndex = line.indexOf(':');
-                if (colonIndex > 0) {
-                    String stashId = line.substring(0, colonIndex).trim();
-                    String description = line.substring(colonIndex + 1).trim();
+            // Parse stash format: stash@{0}: WIP on branch: commit message
+            int colonIndex = line.indexOf(':');
+            if (colonIndex > 0) {
+                String stashId = line.substring(0, colonIndex).trim();
+                String description = line.substring(colonIndex + 1).trim();
 
-                    // Extract time information - assuming format typically includes "n days ago"
-                    String timeAgo = "";
-                    if (description.contains(" days ago") || description.contains(" hours ago") ||
-                            description.contains(" minutes ago") || description.contains(" weeks ago")) {
-                        for (String part : description.split(" ")) {
-                            if (part.matches("\\d+")) {
-                                int timeValue = Integer.parseInt(part);
-                                int nextIndex = description.indexOf(part) + part.length() + 1;
-                                String timeUnit = description.substring(nextIndex).split(" ")[0];
-                                timeAgo = timeValue + " " + timeUnit + " ago";
-                                break;
-                            }
+                // Extract time information - assuming format typically includes "n days ago"
+                String timeAgo = "";
+                if (description.contains(" days ago") || description.contains(" hours ago") ||
+                        description.contains(" minutes ago") || description.contains(" weeks ago")) {
+                    for (String part : description.split(" ")) {
+                        if (part.matches("\\d+")) {
+                            int timeValue = Integer.parseInt(part);
+                            int nextIndex = description.indexOf(part) + part.length() + 1;
+                            String timeUnit = description.substring(nextIndex).split(" ")[0];
+                            timeAgo = timeValue + " " + timeUnit + " ago";
+                            break;
                         }
                     }
-
-                    stashes.add(new StashEntry(stashId, description, timeAgo));
                 }
+
+                stashes.add(new StashEntry(stashId, description, timeAgo));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return stashes;
     }
 
-    // Git operations
-    public boolean switchBranch(String branchName) {
-        try {
-            String r = executeCommandThrow("git", "checkout", branchName);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+
+    public String switchBranch(String branchName) {
+        return executeCommandThrow("git", "checkout", branchName);
+    }
+
+    public String stageFile(String fileName) {
+        return executeCommandThrow("git", "add", fileName);
+    }
+
+    public String unstageFile(String fileName) {
+        return executeCommandThrow("git", "restore", "--staged", fileName);
+    }
+
+    public String discardChanges(String fileName) {
+        return executeCommandThrow("git", "restore", fileName);
+    }
+
+    public String commitChanges(String message) {
+        return executeCommandThrow("git", "commit", "-m", message);
+    }
+
+    public String stashChanges(String message) {
+        if (message != null && !message.trim().isEmpty()) {
+            return executeCommandThrow("git", "stash", "save", message);
+        } else {
+            return executeCommandThrow("git", "stash");
         }
     }
 
-    public boolean stageFile(String fileName) {
-        try {
-            executeCommandThrow("git", "add", fileName);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public String applyStash(String stashId) {
+        return executeCommandThrow("git", "stash", "apply", stashId);
     }
 
-    public boolean unstageFile(String fileName) {
-        try {
-            executeCommandThrow("git", "restore", "--staged", fileName);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public String popStash(String stashId) {
+        return executeCommandThrow("git", "stash", "pop", stashId);
     }
 
-    public boolean discardChanges(String fileName) {
-        try {
-            executeCommandThrow("git", "restore", fileName);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean commitChanges(String message) {
-        try {
-            executeCommandThrow("git", "commit", "-m", message);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean stashChanges(String message) {
-        try {
-            if (message != null && !message.trim().isEmpty()) {
-                executeCommandThrow("git", "stash", "save", message);
-            } else {
-                executeCommandThrow("git", "stash");
-            }
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean applyStash(String stashId) {
-        try {
-            executeCommandThrow("git", "stash", "apply", stashId);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean popStash(String stashId) {
-        try {
-            executeCommandThrow("git", "stash", "pop", stashId);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean dropStash(String stashId) {
-        try {
-            executeCommandThrow("git", "stash", "drop", stashId);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public String dropStash(String stashId) {
+        return executeCommandThrow("git", "stash", "drop", stashId);
     }
 
     @lombok.Value
@@ -304,7 +228,7 @@ public class GitLocalManagerRepository {
         String error;
     }
 
-    private String executeCommandThrow(String... command) throws IOException {
+    private String executeCommandThrow(String... command) {
         CommandResult r = executeCommand(command);
         if (r.isSucceed()) {
             return r.getOutput();
@@ -312,37 +236,41 @@ public class GitLocalManagerRepository {
         throw new RuntimeException("Executing: " + String.join(" ", command) + "; " + r.getError());
     }
 
-    private CommandResult executeCommand(String... command) throws IOException {
+    private CommandResult executeCommand(String... command) {
         LOG.info("-> " + String.join(" ", command));
-
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.directory(new java.io.File(currentRepositoryPath));
-        Process process = processBuilder.start();
-
-        StringBuilder output = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line).append("\n");
-            }
-        }
-
-        StringBuilder error = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                error.append(line).append("\n");
-            }
-        }
-
         try {
-            process.waitFor();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
 
-        LOG.info("<- " + output);
-        return new CommandResult(process.exitValue() == 0, output.toString().trim(), error.toString().trim());
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.directory(new java.io.File(currentRepositoryPath));
+            Process process = processBuilder.start();
+
+            StringBuilder output = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append("\n");
+                }
+            }
+
+            StringBuilder error = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    error.append(line).append("\n");
+                }
+            }
+
+            try {
+                process.waitFor();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            LOG.info("<- " + output);
+            return new CommandResult(process.exitValue() == 0, output.toString().trim(), error.toString().trim());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // Entity classes

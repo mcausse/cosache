@@ -162,10 +162,11 @@
             {{!}}
                 {{commit.hash}}
             {{/}}
-            <span class="code">
-                {{commit.message}}
-                <br/>
-                {{commit.author}} - {{commit.timeAgo}}
+            <span>
+                <div class="code">
+                    {{commit.message}}
+                </div>
+                <small><small>{{commit.author}} - {{commit.timeAgo}}</small></small>
             </span>
             {{#branchRef commit.branchRefs}}
                 <span class="tag">{{branchRef}}</span>

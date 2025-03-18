@@ -37,7 +37,7 @@ public class GitController {
     }
 
     @PatchMapping("/branch")
-    public void checkoutBranch(@RequestParam(name = "branchName") String branchName) {
-        gitRepository.switchBranch(branchName);
+    public String checkoutBranch(@RequestParam(name = "branchName") String branchName) {
+        return gitRepository.switchBranch(branchName);
     }
 }
