@@ -3,287 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <title>Git Control Panel</title>
+    <script src="/jquery-3.7.1.min.js"></script>
     <style>
-        html {
-            zoom: 0.9;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header select {
-            background-color: #444;
-            color: #fff;
-            border: none;
-            padding: 5px;
-        }
-        main {
-            display: flex;
-            flex: 1;
-        }
-        .panel {
-            padding: 10px;
-            border-right: 1px solid #ddd;
-            box-sizing: border-box;
-        }
-        .left-panel, .right-panel {
-            width: 20%;
-        }
-        .middle-panel {
-            flex: 1;
-            overflow-y: auto;
-        }
-        h2 {
-            font-size: 1.2em;
-            margin-top: 0;
-        }
-
-
-
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .branch {
-/*            cursor: pointer;*/
-            padding: 5px 10px;
-        }
-        .branch:nth-child(odd) {
-            background-color: #e0e0e0;
-        }
-        .branch.active {
-            background-color: #007bff;
-            color: #fff;
-            border-radius: 5px;
-        }
-
-
-        .file-status {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            /*margin-bottom: 5px;
-            padding: 5px 0;*/
-        }
-        .file-actions {
-            margin-left: 5px;
-            margin-right: 15px;
-            display: inline-block;
-        }
-/*        .file-actions button {*/
-/*            margin-left: 5px;*/
-/*            margin-right: 5px;*/
-/*            display: inline-block;*/
-/*        }*/
-
-        .commit {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        .commit:nth-child(odd) {
-            background-color: #e0e0e0;
-        }
-
-        .stash {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
-        }
-
-
-
-
-
-
-        button {
-/*            width: 100%;*/
-            background-color: #007bff;
-            color: #ffffff;
-            padding: 12px;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #005EB8;
-        }
-
-        .button-chip {
-            background-color: #ffffff;
-            /* Blanco */
-            color: #005EB8;
-            /* Roche blue */
-            padding: 3px 10px;
-            border: 1px solid #005EB8;
-            border-radius: 8px;
-            font-weight: normal;
-            font-size: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            display: inline-block;
-            margin: 2px;
-        }
-
-        .button-chip:hover {
-            background-color: #d2e2f6;
-            color: #004494;
-        }
-
-        button:disabled {
-            background-color: #c5c5c5;
-            color: #666666;
-            cursor: not-allowed;
-        }
-
-        button.secondary {
-            background-color: #ffffff;
-            color: #005EB8;
-            border: 1px solid #005EB8;
-        }
-
-        button.secondary:hover {
-            background-color: #d2e2f6;
-            color: #004494;
-        }
-
-
-
-        button.important {
-            background-color: #389e0d;
-            color: white;
-        }
-        button.important:hover {
-            background-color: #29790b;
-        }
-
-
-
-
-        button.important2 {
-            background-color: #ea6500;
-            color: white;
-        }
-        button.important2:hover {
-            background-color: #a94100;
-        }
-
-
-        div.section-staged {
-/*            margin-top: 10px;*/
-            margin-bottom: 10px;
-            background-color: #d4edda; /* Verde suave */
-            padding: 12px;
-            border-radius: 10px;
-        }
-        div.section-modified {
-/*            margin-top: 10px;*/
-            margin-bottom: 10px;
-            background-color: #fff3cd; /* Amarillo suave */
-            padding: 12px;
-            border-radius: 10px;
-        }
-        div.section-untracked {
-/*            margin-top: 10px;*/
-            margin-bottom: 10px;
-            background-color: #f8d7da; /* Rojo suave */
-            padding: 12px;
-            border-radius: 10px;
-        }
-
-
-
-
-
-        form {
-            width: 100%;
-            max-width: 900px;
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            padding: 25px 30px;
-            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Labels */
-        label {
-            display: block;
-            /*font-weight: 600;*/
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        /* Input Fields */
-        input[type="text"],input[type="date"],input[type="hour"],
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #d1d1d1;
-            border-radius: 4px;
-            font-size: 14px;
-            color: #333;
-            box-sizing: border-box;
-            transition: border-color 0.3s ease;
-        }
-
-        input[type="text"]:focus,input[type="date"]:focus,input[type="hour"]:focus,
-        select:focus {
-            border-color: #005EB8;
-            /* Roche blue */
-            outline: none;
-        }
-
-
-        .shadow-card {
-            width: 100%;
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            padding: 25px 30px;
-            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .text {
-            font-size: 16px;
-            font-weight: normal;
-        }
-
-
-        .tag {
-            background-color: #ffffff;
-            color: #29790b;
-            padding: 3px 10px;
-            border: 1px solid #29790b;
-            border-radius: 8px;
-            font-weight: normal;
-            font-size: 10px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            display: inline-block;
-            margin: 2px;
-        }
-
+        {{> css.css}}
     </style>
 </head>
 <body>
+
+<script>
+    function patch(url, bodyObj) {
+        $.ajax({
+            url: url, // Reemplaza con la URL de tu backend
+            type: 'PATCH',
+            contentType: 'application/json', // Indica que estás enviando JSON
+            data: JSON.stringify(bodyObj), // Convierte tu objeto a JSON
+
+            success: function(respuesta) {
+                // Maneja la respuesta exitosa del backend
+                console.log('Respuesta del backend:', respuesta);
+            },
+            error: function(error) {
+                // Maneja los errores de la llamada
+                console.error('Error en la llamada PATCH:', error);
+
+                $("#notification").html(error.responseText).show();
+                $("#notification").click(function(){
+                    $("#notification").hide();
+                });
+            }
+        });
+    }
+</script>
+
 <header>
+
     <h1>Git Control Panel</h1>
 
     <span>
@@ -296,16 +51,19 @@
     </span>
 
 </header>
+
+<div id="notification" class="notification" style="display:none"></div>
+
 <main>
     <div class="panel left-panel">
         <h2>Branches</h2>
         <ul>
             {{#branch branches}}
             <li class="branch {{?branch.current}}active{{/}} text file-status">
-                <span>{{branch.name}}</span>
+                <span class="code">{{branch.name}}</span>
                 <span>
                     {{^branch.current}}
-                        <button class="button-chip">Checkout</button>
+                        <button class="button-chip" onclick="patch('{{servlet-context}}/branch?branchName={{branch.name}}', {})">Checkout</button>
                     {{/}}
                 </span>
             </li>
@@ -329,7 +87,7 @@
             <div class="section-staged">
                 {{#file status.stagedFiles}}
                 <div class="file-status">
-                    <span class="text">{{file.fileName}}</span>
+                    <span class="code">{{file.fileName}}</span>
                     <div class="file-actions">
                         <button class="button-chip" title="(use git restore --staged <file>... to unstage)">Restore</button>
                     </div>
@@ -342,7 +100,7 @@
             <div class="section-modified">
                 {{#file status.modifiedFiles}}
                 <div class="file-status">
-                    <span class="text">{{file.fileName}}</span>
+                    <span class="code">{{file.fileName}}</span>
                     <div class="file-actions">
                         <button class="button-chip" title="(use git add <file>... to update what will be committed)" style="display: inline-block;">Add</button>
                         <button class="button-chip" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;">Restore</button>
@@ -356,7 +114,7 @@
             <div class="section-untracked">
                 {{#file status.untrackedFiles}}
                 <div class="file-status">
-                    <span class="text">{{file.fileName}}</span>
+                    <span class="code">{{file.fileName}}</span>
                     <div class="file-actions">
                         <button class="button-chip" title="(use git add <file>... to include in what will be committed)">Add</button>
                     </div>
@@ -394,11 +152,11 @@
             {{!}}
                 {{commit.hash}}
             {{/}}
-            {{commit.message}} <br/>
-            <small>
-                <i>({{commit.author}})</i>
-                - {{commit.timeAgo}}
-            </small>
+            <span class="code">
+                {{commit.message}}
+                <br/>
+                {{commit.author}} - {{commit.timeAgo}}
+            </span>
             {{#branchRef commit.branchRefs}}
                 <span class="tag">{{branchRef}}</span>
             {{/}}
@@ -426,9 +184,9 @@
         <ul>
             {{#stash stashes}}
             <li class="stash">
-                <span>
+                <span class="code">
                     {{stash.id}}<br/>
-                    <small>
+                    <small style="color: gray">
                         <i>({{stash.description}})</i>
                         - {{stash.timeAgo}}
                     </small>
@@ -443,6 +201,7 @@
     </div>
 </main>
 
+{{!}}
 <div style="width:100px">
     <button class="">Default</button>
     <button class="secondary">secondary</button>
@@ -451,6 +210,7 @@
     <button class="important">important</button>
     <button class="important2">important2</button>
 </div>
+{{/}}
 
 </body>
 </html>

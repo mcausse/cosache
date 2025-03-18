@@ -2,9 +2,7 @@ package io.homs.gitman;
 
 import io.homs.custache.CachedModelAndView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -12,7 +10,7 @@ import java.util.List;
 @RequestMapping(value = GitController.BASE_URL)
 public class GitController {
 
-    public static final String BASE_URL = "/git";
+    public static final String BASE_URL = "git";
 
     @Autowired
     CachedModelAndView cachedModelAndView;
@@ -36,5 +34,10 @@ public class GitController {
                 .with("stashes", stashes)
                 .with("servlet-context", "/" + BASE_URL)
                 .evaluate();
+    }
+
+    @PatchMapping("/branch")
+    public void checkoutBranch(@RequestParam(name = "branchName") String branchName) {
+        gitRepository.switchBranch(branchName);
     }
 }

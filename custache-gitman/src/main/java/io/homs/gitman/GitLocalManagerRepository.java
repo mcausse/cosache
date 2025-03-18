@@ -1,6 +1,8 @@
 package io.homs.gitman;
 
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +16,8 @@ import java.util.List;
 @Getter
 @Repository
 public class GitLocalManagerRepository {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GitLocalManagerRepository.class);
 
 //    public static void main(String[] args) throws IOException, InterruptedException {
 //        var r = new GitLocalManagerRepository();
@@ -37,7 +41,7 @@ public class GitLocalManagerRepository {
         String currentBranch = getCurrentBranch();
 
         try {
-            String output = executeCommand("git", "branch");
+            String output = executeCommandThrow("git", "branch");
             for (String line : output.split("\n")) {
                 line = line.trim();
                 String branchName = line.startsWith("*") ? line.substring(2) : line;
@@ -53,7 +57,7 @@ public class GitLocalManagerRepository {
 
     public String getCurrentBranch() {
         try {
-            return executeCommand("git", "rev-parse", "--abbrev-ref", "HEAD").trim();
+            return executeCommandThrow("git", "rev-parse", "--abbrev-ref", "HEAD").trim();
         } catch (IOException e) {
             e.printStackTrace();
             return "";
@@ -64,7 +68,7 @@ public class GitLocalManagerRepository {
         List<Commit> commits = new ArrayList<>();
 
         try {
-            String output = executeCommand("git", "log", "--format=%H|%s|%ae|%d|%ar", "-n", String.valueOf(limit));
+            String output = executeCommandThrow("git", "log", "--format=%H|%s|%ae|%d|%ar", "-n", String.valueOf(limit));
             for (String line : output.split("\n")) {
                 if (line.trim().isEmpty()) continue;
 
@@ -131,8 +135,8 @@ public class GitLocalManagerRepository {
         GitStatus status = new GitStatus();
 
         try {
-            String output = executeCommand("git", "status", "--porcelain");
-            String mergeStatus = executeCommand("git", "status");
+            String output = executeCommandThrow("git", "status", "--porcelain");
+            String mergeStatus = executeCommandThrow("git", "status");
 
             if (mergeStatus.contains("merge") && (mergeStatus.contains("in progress") || mergeStatus.contains("conflict"))) {
                 status.setMergeConflict(true);
@@ -163,7 +167,7 @@ public class GitLocalManagerRepository {
         List<StashEntry> stashes = new ArrayList<>();
 
         try {
-            String output = executeCommand("git", "stash", "list");
+            String output = executeCommandThrow("git", "stash", "list");
             for (String line : output.split("\n")) {
                 if (line.trim().isEmpty()) continue;
 
@@ -201,7 +205,7 @@ public class GitLocalManagerRepository {
     // Git operations
     public boolean switchBranch(String branchName) {
         try {
-            executeCommand("git", "checkout", branchName);
+            String r = executeCommandThrow("git", "checkout", branchName);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -211,7 +215,7 @@ public class GitLocalManagerRepository {
 
     public boolean stageFile(String fileName) {
         try {
-            executeCommand("git", "add", fileName);
+            executeCommandThrow("git", "add", fileName);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -221,7 +225,7 @@ public class GitLocalManagerRepository {
 
     public boolean unstageFile(String fileName) {
         try {
-            executeCommand("git", "restore", "--staged", fileName);
+            executeCommandThrow("git", "restore", "--staged", fileName);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -231,7 +235,7 @@ public class GitLocalManagerRepository {
 
     public boolean discardChanges(String fileName) {
         try {
-            executeCommand("git", "restore", fileName);
+            executeCommandThrow("git", "restore", fileName);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -241,7 +245,7 @@ public class GitLocalManagerRepository {
 
     public boolean commitChanges(String message) {
         try {
-            executeCommand("git", "commit", "-m", message);
+            executeCommandThrow("git", "commit", "-m", message);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -252,9 +256,9 @@ public class GitLocalManagerRepository {
     public boolean stashChanges(String message) {
         try {
             if (message != null && !message.trim().isEmpty()) {
-                executeCommand("git", "stash", "save", message);
+                executeCommandThrow("git", "stash", "save", message);
             } else {
-                executeCommand("git", "stash");
+                executeCommandThrow("git", "stash");
             }
             return true;
         } catch (IOException e) {
@@ -265,7 +269,7 @@ public class GitLocalManagerRepository {
 
     public boolean applyStash(String stashId) {
         try {
-            executeCommand("git", "stash", "apply", stashId);
+            executeCommandThrow("git", "stash", "apply", stashId);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -275,7 +279,7 @@ public class GitLocalManagerRepository {
 
     public boolean popStash(String stashId) {
         try {
-            executeCommand("git", "stash", "pop", stashId);
+            executeCommandThrow("git", "stash", "pop", stashId);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -285,7 +289,7 @@ public class GitLocalManagerRepository {
 
     public boolean dropStash(String stashId) {
         try {
-            executeCommand("git", "stash", "drop", stashId);
+            executeCommandThrow("git", "stash", "drop", stashId);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -293,7 +297,24 @@ public class GitLocalManagerRepository {
         }
     }
 
-    private String executeCommand(String... command) throws IOException {
+    @lombok.Value
+    public static class CommandResult {
+        boolean succeed;
+        String output;
+        String error;
+    }
+
+    private String executeCommandThrow(String... command) throws IOException {
+        CommandResult r = executeCommand(command);
+        if (r.isSucceed()) {
+            return r.getOutput();
+        }
+        throw new RuntimeException("Executing: " + String.join(" ", command) + "; " + r.getError());
+    }
+
+    private CommandResult executeCommand(String... command) throws IOException {
+        LOG.info("-> " + String.join(" ", command));
+
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.directory(new java.io.File(currentRepositoryPath));
         Process process = processBuilder.start();
@@ -306,13 +327,25 @@ public class GitLocalManagerRepository {
             }
         }
 
+        StringBuilder error = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                error.append(line).append("\n");
+            }
+        }
+
         try {
             process.waitFor();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
-        return output.toString();
+        LOG.info("<- " + output);
+        String outputStr = output.toString().trim();
+        String errorStr = error.toString().trim();
+
+        return new CommandResult(errorStr.isEmpty(), outputStr, errorStr);
     }
 
     // Entity classes
