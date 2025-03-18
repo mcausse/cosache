@@ -18,6 +18,10 @@ public class ForAst extends Ast {
     @Override
     public String evaluate(Context context) {
         Iterable<?> iterable = expression.evaluateToIterable(context);
+        if (iterable == null) {
+            return "";
+        }
+
         var strb = new StringBuilder();
 
         int i = 0;

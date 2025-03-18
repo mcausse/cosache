@@ -7,20 +7,26 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
 public class GitLocalManagerRepository {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        var r = new GitLocalManagerRepository();
-        r.repositoryPath = "C:\\java\\workospace\\cosache";
-        System.out.println(r.getBranches());
-        System.out.println(r.getRecentCommits(20));
+//    public static void main(String[] args) throws IOException, InterruptedException {
+//        var r = new GitLocalManagerRepository();
+//        r.repositoryPath = "D:/gitrepos/nplh-core";
+//        System.out.println(r.getBranches());
+//        System.out.println(r.getRecentCommits(20));
+//    }
+
+
+    final String repositoryPath;
+
+    public GitLocalManagerRepository(@Value("${git.repository.path}") String repositoryPath) {
+        this.repositoryPath = repositoryPath;
     }
 
-    @Value("${git.repository.path}")
-    private String repositoryPath;
 
     public List<Branch> getBranches() {
         List<Branch> branches = new ArrayList<>();
@@ -54,17 +60,26 @@ public class GitLocalManagerRepository {
         List<Commit> commits = new ArrayList<>();
 
         try {
-            String output = executeCommand("git", "log", "--format=%H|%s|%an|%ar", "-n", String.valueOf(limit));
+            String output = executeCommand("git", "log", "--format=%H|%s|%ae|%d|%ar", "-n", String.valueOf(limit));
             for (String line : output.split("\n")) {
                 if (line.trim().isEmpty()) continue;
 
                 String[] parts = line.split("\\|");
-                if (parts.length == 4) {
+                if (parts.length == 5) {
                     String hash = parts[0];
                     String message = parts[1];
                     String author = parts[2];
-                    String timeAgo = parts[3];
-                    commits.add(new Commit(hash, message, author, timeAgo));
+
+                    // ...|5 hours ago| (HEAD -> feature/NPLH-11301-WIBU-modules-skeleton, origin/feature/NPLH-11301-WIBU-modules-skeleton)
+                    String branchRefsStr = parts[3].trim();
+                    List<String> branchRefs = null;
+                    if (!branchRefsStr.trim().isEmpty()) {
+                        branchRefs = Arrays.asList(branchRefsStr.substring(1, branchRefsStr.length() - 1).split(", "));
+                    }
+
+                    String timeAgo = parts[4];
+
+                    commits.add(new Commit(hash, message, author, timeAgo, branchRefs));
                 }
             }
         } catch (IOException e) {
@@ -328,12 +343,14 @@ public class GitLocalManagerRepository {
         private final String message;
         private final String author;
         private final String timeAgo;
+        private final List<String> branchRefs;
 
-        public Commit(String hash, String message, String author, String timeAgo) {
+        public Commit(String hash, String message, String author, String timeAgo, List<String> branchRefs) {
             this.hash = hash;
             this.message = message;
             this.author = author;
             this.timeAgo = timeAgo;
+            this.branchRefs = branchRefs;
         }
 
         public String getHash() {
@@ -350,6 +367,10 @@ public class GitLocalManagerRepository {
 
         public String getTimeAgo() {
             return timeAgo;
+        }
+
+        public List<String> getBranchRefs() {
+            return branchRefs;
         }
 
         @Override

@@ -5,126 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Git Local Manager</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-        }
-        
-        body {
-            padding: 20px;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto auto;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .panel {
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 15px;
-        }
-        
-        h2 {
-            margin-bottom: 15px;
-            color: #2d3748;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        ul {
-            list-style-type: none;
-        }
-        
-        li {
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .selected {
-            background-color: #e6f7ff;
-            border-left: 3px solid #1890ff;
-            padding-left: 10px;
-        }
-        
-        button {
-            background-color: #4c566a;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            margin-right: 5px;
-            font-size: 12px;
-        }
-        
-        button:hover {
-            background-color: #3b4252;
-        }
-        
-        .commit-info {
-            color: #666;
-            font-size: 12px;
-        }
-        
-        .status-staged, .status-modified, .status-untracked {
-            padding-left: 5px;
-            margin-bottom: 5px;
-        }
-        
-        .status-staged {
-            border-left: 3px solid #52c41a;
-        }
-        
-        .status-modified {
-            border-left: 3px solid #faad14;
-        }
-        
-        .status-untracked {
-            border-left: 3px solid #f5222d;
-        }
-        
-        .conflict-warning {
-            background-color: #fff1f0;
-            color: #cf1322;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 3px;
-            border-left: 3px solid #cf1322;
-        }
-        
-        .file-actions {
-            margin-top: 5px;
-        }
-
-        .file {
-            font-size:small;
-        }
+        {{> roche.css}}
     </style>
 </head>
 <body>
-    <h1 style="text-align: center; margin-bottom: 20px;">Git Local Manager</h1>
+<!--    <h1 style="text-align: center; margin-bottom: 20px;">Git Local Manager</h1>-->
+    <h1 style="text-align: center; margin-bottom: 20px;">Git</h1>
+
+    <div style="width:100px">
+        <button class="">Default</button>
+        <button class="secondary">secondary</button>
+        <button class="button-chip">chip</button>
+        <button class="" disabled>disabled</button>
+        <button class="important">important</button>
+        <button class="important2">important2</button>
+    </div>
     
     <div class="container">
         <!-- Panel de Ramas -->
         <div class="panel">
             <h2>Ramas</h2>
-            <ul id="branch-list">
+            <ul id="branch-list" style="max-height: 200px; overflow-y: auto;">
                 {{#branch branches}}
                 <li class="{{?branch.current}}selected{{/}}" style="display: flex; justify-content: space-between;">
-                    <span>{{branch.name}}</span>
-                    {{^ branch.current}}
-                        <button>Checkout</button>
-                    {{/}}
+                    <span style="align-self: center;">{{branch.name}}</span>
+                    <button class="button-chip" {{?branch.current}}disabled{{/}} style="width: 80px; align-self: center;">Checkout</button>
                 </li>
                 {{/}}
             </ul>

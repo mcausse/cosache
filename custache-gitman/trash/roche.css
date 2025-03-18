@@ -1,0 +1,305 @@
+html {
+    zoom: 0.9;
+}
+
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    /*justify-content: center;*/
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f7f7f7;
+    color: #333;
+    margin: 0;
+}
+
+.header {
+    display: flex;
+    align-items: left;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 60px;
+    /* Adjust size as needed */
+    margin-right: 15px;
+}
+
+
+/* Header */
+h1 {
+    color: #005EB8;
+    /* Roche blue */
+    font-weight: 700;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.section {
+    width: 90%;
+    /*max-width: 900px;*/
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 25px 30px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+form {
+    width: 100%;
+    max-width: 900px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 25px 30px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Labels */
+label {
+    display: block;
+    /*font-weight: 600;*/
+    color: #333;
+    margin-bottom: 5px;
+}
+
+/* Input Fields */
+input[type="text"],input[type="date"],input[type="hour"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #d1d1d1;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,input[type="date"]:focus,input[type="hour"]:focus,
+select:focus {
+    border-color: #005EB8;
+    /* Roche blue */
+    outline: none;
+}
+
+
+/*
+button.primary {
+    background-color: #005EB8;
+    color: #ffffff;
+    padding: 12px;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button.secondary {
+    background-color: #ffffff;
+    color: #005EB8;
+    border: 1px solid #005EB8;
+}
+
+button.secondary:hover {
+    background-color: #f0f4f8;
+    color: #004494;
+}
+
+button.important {
+    width: 100%;
+    background-color: #e75c01;
+    color: #ffffff;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button.important2 {
+    width: 100%;
+    background-color: #389e0d;
+    color: #ffffff;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+button.primary:hover, button.secondary:hover {
+    background-color: #004494;
+    color: #ffffff;
+}
+
+*/
+
+button {
+    width: 100%;
+    background-color: #005EB8;
+    /* Roche blue */
+    color: #ffffff;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #004494;
+}
+
+.button-chip {
+    background-color: #ffffff;
+    /* Blanco */
+    color: #005EB8;
+    /* Roche blue */
+    padding: 5px 10px;
+    border: 1px solid #005EB8;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: inline-block;
+    margin: 5px;
+}
+
+.button-chip:hover {
+    background-color: #f0f0f0;
+    color: #004494;
+}
+
+button:disabled {
+    background-color: #c5c5c5;
+    color: #666666;
+    cursor: not-allowed;
+}
+
+button.secondary {
+    background-color: #ffffff;
+    color: #005EB8;
+    border: 1px solid #005EB8;
+}
+
+button.secondary:hover {
+    background-color: #f0f4f8;
+    color: #004494;
+}
+
+
+
+button.important {
+    background-color: #389e0d;
+    color: white;
+}
+button.important:hover {
+    background-color: #29790b;
+}
+
+
+
+
+button.important2 {
+    background-color: #ea6500;
+    color: white;
+}
+button.important2:hover {
+    background-color: #a94100;
+}
+
+
+
+/* Selected Configuration Section */
+h2 {
+    color: #005EB8;
+    /* Roche blue */
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+pre {
+    background-color: #f0f4f8;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    font-size: 14px;
+    color: #333;
+    overflow-x: auto;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    white-space: pre-wrap;
+    /* Wraps text inside pre tag */
+    word-wrap: break-word;
+    /* Allows long words to break and wrap */
+    overflow-wrap: anywhere;
+    /* Breaks the word at any point if necessary */
+}
+
+
+
+
+
+:link { color: #0000EE; }
+:visited { color: #0000EE; }
+:link:active, :visited:active { color: #0000EE; }
+
+
+
+
+
+
+.OPEN {color: red}
+.MERGED {color: green}
+.CLOSED {color: green}
+
+summary {
+    cursor: pointer
+}
+
+.pr-title {
+}
+.big {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+.odd {
+    background-color: #f0f4f8;
+}
+
+
+.verysmall {
+    color: tomato;
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: normal;
+}
+
+
+li {
+    list-style-type: none;
+    padding-left: 5px;
+}
+li:nth-child(odd) {
+    background-color: #e0e0e0;
+}
+li.selected {
+    background-color: #ea6500;
+    border-radius: 4px;
+}
+
