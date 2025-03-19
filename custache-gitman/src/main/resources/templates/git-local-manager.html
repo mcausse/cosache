@@ -14,10 +14,9 @@
 
 <script>
     function patch(url, bodyObj) {
-        //$("body").css("cursor", "wait");
-        //$("html").addClass("wait");
+
         $("html").css("cursor", "wait");
-        $('#waiting').html('<img src="/loading.gif" width="50" height="50">')
+        $('#waiting').html('<img src="/loading.gif" width="50" height="50">');
 
         $.ajax({
             url: url, // Reemplaza con la URL de tu backend
@@ -35,7 +34,7 @@
                 console.error('Error en la llamada PATCH:', error);
 
                 $("html").css("cursor", "default");
-                $('#waiting').html("")
+                $('#waiting').html("Git");  // TODO
 
                 $("#notification").html(error.responseText).show();
                 $("#notification").click(function(){
@@ -50,7 +49,6 @@
 
     <h1 id="waiting">
         Git
-        <span id="waiting"></span>
     </h1>
 
     <span>
@@ -101,7 +99,10 @@
                 <div class="file-status">
                     <span class="code">{{file.fileName}}</span>
                     <div class="file-actions">
-                        <button class="button-chip" title="(use git restore --staged <file>... to unstage)">Restore</button>
+                        <button class="button-chip" title="(use git restore --staged <file>... to unstage)"
+                                onclick="patch('{{servlet-context}}/stage/restore-staged?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                            Restore
+                        </button>
                     </div>
                 </div>
                 {{/}}
@@ -114,8 +115,14 @@
                 <div class="file-status">
                     <span class="code">{{file.fileName}}</span>
                     <div class="file-actions">
-                        <button class="button-chip" title="(use git add <file>... to update what will be committed)" style="display: inline-block;">Add</button>
-                        <button class="button-chip" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;">Restore</button>
+                        <button class="button-chip" title="(use git add <file>... to update what will be committed)" style="display: inline-block;"
+                                onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                            Add
+                        </button>
+                        <button class="button-chip" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;"
+                                onclick="patch('{{servlet-context}}/stage/restore?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                            Restore
+                        </button>
                     </div>
                 </div>
                 {{/}}
@@ -128,7 +135,10 @@
                 <div class="file-status">
                     <span class="code">{{file.fileName}}</span>
                     <div class="file-actions">
-                        <button class="button-chip" title="(use git add <file>... to include in what will be committed)">Add</button>
+                        <button class="button-chip" title="(use git add <file>... to include in what will be committed)"
+                                onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                            Add
+                        </button>
                     </div>
                 </div>
                 {{/}}
@@ -137,14 +147,16 @@
 
         <div style="display: flex; align-items: center; justify-content: space-between;">
             {{?status.totalFiles}}
-                <button><big>+</big> Add all</button>
+                <button onclick="patch('{{servlet-context}}/stage/add-all', {})">
+                    <big>+</big> Add all
+                </button>
             {{:}}
                 <button disabled><big>+</big> Add all</button>
             {{/}}
 
             <div style="display: flex; align-items: center;">
                 <input type="text" placeholder="Commit message" style="width: 300px; display: inline-block; margin-bottom: 0">
-                {{?status.totalFiles}}
+                {{? status.stagedFiles}}
                     <button class="important"><big>↷</big> Commit</button>
                 {{:}}
                     <button disabled><big>↷</big> Commit</button>

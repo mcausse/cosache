@@ -248,4 +248,7 @@ public class GitLocalManagerService {
         return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "remote", "show").trim();
     }
 
+    public String stageAll() {
+        return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "add", ".").trim();
+    }
 }

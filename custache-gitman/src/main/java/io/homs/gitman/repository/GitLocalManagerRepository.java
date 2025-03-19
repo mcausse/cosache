@@ -54,7 +54,7 @@ public class GitLocalManagerRepository {
                 Thread.currentThread().interrupt();
             }
 //            LOG.info("<- " + output + " " + error);
-            return new CommandResult(process.exitValue() == 0, output.toString().trim(), error.toString().trim());
+            return new CommandResult(process.exitValue() == 0, output.toString(), error.toString());
 
         } catch (Exception e) {
             throw new RuntimeException(e);

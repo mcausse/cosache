@@ -70,4 +70,21 @@ public class GitController {
     public String stashDrop(@RequestParam(name = "stashId") String stashId) {
         return gitRepository.dropStash(stashId);
     }
+
+    @PatchMapping("/stage/add")
+    public String add(@RequestParam(name = "fileName") String fileName) {
+        return gitRepository.stageFile(fileName);
+    }
+    @PatchMapping("/stage/restore")
+    public String restore(@RequestParam(name = "fileName") String fileName) {
+        return gitRepository.discardChanges(fileName);
+    }
+    @PatchMapping("/stage/restore-staged")
+    public String restoreStaged(@RequestParam(name = "fileName") String fileName) {
+        return gitRepository.unstageFile(fileName);
+    }
+    @PatchMapping("/stage/add-all")
+    public String addAll() {
+        return gitRepository.stageAll();
+    }
 }
