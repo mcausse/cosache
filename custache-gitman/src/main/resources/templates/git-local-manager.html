@@ -14,6 +14,11 @@
 
 <script>
     function patch(url, bodyObj) {
+        //$("body").css("cursor", "wait");
+        //$("html").addClass("wait");
+        $("html").css("cursor", "wait");
+        $('#waiting').html('<img src="/loading.gif" width="50" height="50">')
+
         $.ajax({
             url: url, // Reemplaza con la URL de tu backend
             type: 'PATCH',
@@ -23,12 +28,14 @@
             success: function(respuesta) {
                 // Maneja la respuesta exitosa del backend
                 console.log('Respuesta del backend:', respuesta);
-                $("body").css("cursor", "progress");
                 location.reload();
             },
             error: function(error) {
                 // Maneja los errores de la llamada
                 console.error('Error en la llamada PATCH:', error);
+
+                $("html").css("cursor", "default");
+                $('#waiting').html("")
 
                 $("#notification").html(error.responseText).show();
                 $("#notification").click(function(){
@@ -41,7 +48,10 @@
 
 <header>
 
-    <h1>Git Control Panel</h1>
+    <h1 id="waiting">
+        Git
+        <span id="waiting"></span>
+    </h1>
 
     <span>
         <label for="repository" style="color:white; font-size:12px">Repository path:</label>
@@ -81,7 +91,7 @@
         </div>
         {{/}}
 
-        <button class=""><big>⭳</big> Pull</button>
+        <button class="" onclick="patch('{{servlet-context}}/commit/pull', {})"><big>⭳</big> Pull</button>
         <br/>
         <br/>
 
@@ -144,14 +154,6 @@
             </div>
         </div>
 
-
-        {{!}}
-        private final String hash;
-        private final String message;
-        private final String author;
-        private final String timeAgo;
-        {{/}}
-
         <br/>
         <br/>
         <br/>
@@ -180,16 +182,10 @@
 
 
 
-{{!}}
-    private final String id;
-    private final String description;
-    private final String timeAgo;
-{{/}}
-
     <div class="panel right-panel">
         <h2>Stashes</h2>
 
-        <button><big>↴</big> Push Stash</button>
+        <button onclick="patch('{{servlet-context}}/stash/push', {})"><big>↴</big> Push Stash</button>
         <br/>
 
         <ul>
@@ -203,8 +199,9 @@
                     </small>
                 </span>
                 <div class="stash-actions">
-                    <button><big>←</big> Apply</button>
-                    <button><big>↤</big> Pop</button>
+                    <button class="button-chip" onclick="patch('{{servlet-context}}/stash/apply?stashId='+encodeURIComponent('{{stash.id}}'), {})">Apply</button>
+                    <button class="button-chip" onclick="patch('{{servlet-context}}/stash/pop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Pop</button>
+                    <button class="button-chip" onclick="patch('{{servlet-context}}/stash/drop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Drop</button>
                 </div>
             </li>
             {{/}}

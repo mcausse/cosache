@@ -1,6 +1,11 @@
 package io.homs.gitman;
 
 import io.homs.custache.CachedModelAndView;
+import io.homs.gitman.service.GitLocalManagerService;
+import io.homs.gitman.service.ent.Branch;
+import io.homs.gitman.service.ent.Commit;
+import io.homs.gitman.service.ent.GitStatus;
+import io.homs.gitman.service.ent.StashEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,15 +21,15 @@ public class GitController {
     CachedModelAndView cachedModelAndView;
 
     @Autowired
-    GitLocalManagerRepository gitRepository;
+    GitLocalManagerService gitRepository;
 
     @GetMapping
     public String index() {
 
-        List<GitLocalManagerRepository.Branch> branches = gitRepository.getBranches();
-        GitLocalManagerRepository.GitStatus status = gitRepository.getStatus();
-        List<GitLocalManagerRepository.Commit> commits = gitRepository.getRecentCommits(10);
-        List<GitLocalManagerRepository.StashEntry> stashes = gitRepository.getStashes();
+        List<Branch> branches = gitRepository.getBranches();
+        GitStatus status = gitRepository.getStatus();
+        List<Commit> commits = gitRepository.getRecentCommits(10);
+        List<StashEntry> stashes = gitRepository.getStashes();
 
         return cachedModelAndView.getOrParse("git-local-manager.html")
                 .with("repositoryPaths", gitRepository.getRepositoryPaths())
@@ -39,5 +44,30 @@ public class GitController {
     @PatchMapping("/branch")
     public String checkoutBranch(@RequestParam(name = "branchName") String branchName) {
         return gitRepository.switchBranch(branchName);
+    }
+
+    @PatchMapping("/commit/pull")
+    public String pull() {
+        return gitRepository.pullCurrentBranch();
+    }
+
+    @PatchMapping("/stash/push")
+    public String stashPush() {
+        return gitRepository.stashChanges(null);
+    }
+
+    @PatchMapping("/stash/pop")
+    public String stashPop(@RequestParam(name = "stashId") String stashId) {
+        return gitRepository.popStash(stashId);
+    }
+
+    @PatchMapping("/stash/apply")
+    public String stashApply(@RequestParam(name = "stashId") String stashId) {
+        return gitRepository.applyStash(stashId);
+    }
+
+    @PatchMapping("/stash/drop")
+    public String stashDrop(@RequestParam(name = "stashId") String stashId) {
+        return gitRepository.dropStash(stashId);
     }
 }
