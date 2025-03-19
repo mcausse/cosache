@@ -87,4 +87,8 @@ public class GitController {
     public String addAll() {
         return gitRepository.stageAll();
     }
+    @PatchMapping("/stage/restore-staged-all")
+    public String restoreStagedAll() {
+        return gitRepository.unstageAll();
+    }
 }

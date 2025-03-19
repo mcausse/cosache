@@ -126,8 +126,8 @@ public class GitLocalManagerService {
         GitStatus status = new GitStatus();
 
         String output = gitRepository.executeCommandThrow(currentRepositoryPath, "git", "status", "--porcelain");
-        String mergeStatus = gitRepository.executeCommandThrow(currentRepositoryPath, "git", "status").toLowerCase();
 
+        String mergeStatus = gitRepository.executeCommandThrow(currentRepositoryPath, "git", "status").toLowerCase();
         if (mergeStatus.contains("merge") && (mergeStatus.contains("in progress") || mergeStatus.contains("conflict"))) {
             status.setMergeConflict(true);
         }
@@ -196,6 +196,10 @@ public class GitLocalManagerService {
 
     public String unstageFile(String fileName) {
         return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "restore", "--staged", fileName);
+    }
+
+    public String unstageAll() {
+        return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "restore", "--staged", ".");
     }
 
     public String discardChanges(String fileName) {

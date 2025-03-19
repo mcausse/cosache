@@ -66,6 +66,21 @@
             margin: 2px;
         }
 
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 5px;
+        }
+        li:nth-child(odd) {
+            background-color: #e0e0e0;
+        }
+        li.active {
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+        }
     </style>
 
 </head>
@@ -75,7 +90,7 @@
     function patch(url, bodyObj) {
 
         $("html").css("cursor", "wait");
-        $('#waiting').html('<img src="/loading.gif" width="40" height="40">');
+        $('#waiting').html('<img src="/loading.gif" width="35" height="35">');
 
         $.ajax({
             url: url, // Reemplaza con la URL de tu backend
@@ -106,9 +121,10 @@
 
 <div class="container-fluid">
     <div id="banner" class="row" style="display: flex; align-items: center;">
+        <div id="waiting" class="col-md-2">
+        </div>
         <div class="col-md-2">
-           <h1>Git</h1>
-            <div id="waiting"></div>
+            <h1>Git</h1>
         </div>
         <div class="col-md-7">
         </div>
@@ -204,13 +220,14 @@
             {{/}}
 
             <div style="display: flex; align-items: center; justify-content: space-between;">
-                {{?status.totalFiles}}
+                <div style="display: flex; align-items: center;">
                     <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/add-all', {})">
-                        <big>+</big> Add all
+                        Add all
                     </button>
-                {{:}}
-                    <button class="btn btn-default" disabled><big>+</big> Add all</button>
-                {{/}}
+                    <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/restore-staged-all', {})">
+                        Restore all
+                    </button>
+                </div>
 
                 <div style="display: flex; align-items: center;">
                     <input type="text" placeholder="Commit message" class="form-control">
@@ -219,10 +236,37 @@
                     {{:}}
                         <button class="btn btn-primary" disabled><big>↷</big> Commit</button>
                     {{/}}
-<!--                    &nbsp;-->
-<!--                    <button class="btn btn-danger"><big>⭱</big> Push</button>-->
                 </div>
             </div>
+
+<!--            <div class="row">-->
+<!--                <div class="col-md-1">-->
+<!--                    <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/add-all', {})">-->
+<!--                        Add all-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--                <div class="col-md-1">-->
+<!--                    <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/restore-staged-all', {})">-->
+<!--                        Restore all-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--                <div class="col-md-5">-->
+<!--                </div>-->
+<!--                <div class="col-md-3">-->
+<!--                    {{? status.stagedFiles}}-->
+<!--                        <input type="text" placeholder="Commit message" class="form-control">-->
+<!--                    {{:}}-->
+<!--                        <input type="text" placeholder="Commit message" class="form-control" disabled>-->
+<!--                    {{/}}-->
+<!--                </div>-->
+<!--                <div class="col-md-2">-->
+<!--                    {{? status.stagedFiles}}-->
+<!--                        <button class="btn btn-primary"><big>↷</big> Commit</button>-->
+<!--                    {{:}}-->
+<!--                        <button class="btn btn-primary" disabled><big>↷</big> Commit</button>-->
+<!--                    {{/}}-->
+<!--                </div>-->
+<!--            </div>-->
 
             <br/>
             <br/>
@@ -232,40 +276,46 @@
 
             <button class="btn btn-primary" onclick="patch('{{servlet-context}}/commit/pull', {})"><big>⭳</big> Pull</button>
             <button class="btn btn-danger"><big>⭱</big> Push</button>
+            <br/>
+            <br/>
 
+            <ul>
             {{#commit commits}}
-            <div class="commit">
-                {{!}}
-                    {{commit.hash}}
-                {{/}}
-                {{#branchRef commit.branchRefs}}
-                    <span class="tag">{{branchRef}}</span>
-                {{/}}
-                <div class="code">
-                    {{commit.message}}
-                </div>
-                <small><small>{{commit.author}} - {{commit.timeAgo}}</small></small>
-            </div>
+                <li>
+                    {{!}}
+                        {{commit.hash}}
+                    {{/}}
+                    {{#branchRef commit.branchRefs}}
+                        <span class="tag">{{branchRef}}</span>
+                    {{/}}
+                    <div class="code">
+                        {{commit.message}}
+                    </div>
+                    <small><small>{{commit.author}} - {{commit.timeAgo}}</small></small>
+                </li>
             {{/}}
+            </ul>
         </div>
+
+
         <div class="col-xs-12 col-md-3">
 
             <h3>Stashes</h3>
 
             <button class="btn btn-primary" onclick="patch('{{servlet-context}}/stash/push', {})"><big>↴</big> Push Stash</button>
             <br/>
+            <br/>
 
             <ul>
                 {{#stash stashes}}
                 <li class="stash">
-                <span class="code">
-                    {{stash.id}}<br/>
-                    <small style="color: gray">
-                        <i>({{stash.description}})</i>
-                        - {{stash.timeAgo}}
-                    </small>
-                </span>
-                    <div class="stash-actions">
+                    <span class="code">
+                        {{stash.id}}<br/>
+                        <small style="color: gray">
+                            <i>({{stash.description}})</i> - {{stash.timeAgo}}
+                        </small>
+                    </span>
+                    <div>
                         <button class="btn btn-default btn-xs" onclick="patch('{{servlet-context}}/stash/apply?stashId='+encodeURIComponent('{{stash.id}}'), {})">Apply</button>
                         <button class="btn btn-default btn-xs" onclick="patch('{{servlet-context}}/stash/pop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Pop</button>
                         <button class="btn btn-default btn-xs" onclick="patch('{{servlet-context}}/stash/drop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Drop</button>
