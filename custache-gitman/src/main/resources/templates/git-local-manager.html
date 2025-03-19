@@ -7,8 +7,29 @@
     <title>Git Control Panel</title>
     <script src="/jquery-3.7.1.min.js"></script>
     <style>
-        {{> css.css}}
+        {{!}}{{> css.css}}{{/}}
+        {{> bootstrap.css}}
+
+        #banner {
+            background-color: #F05033;
+            color: #fff;
+/*            padding: 5px 10px;*/
+/*            display: flex;*/
+/*            justify-content: space-between;*/
+/*            align-items: center;*/
+        }
+
+        #notification {
+        /*    margin-bottom: 10px;*/
+            background-color: #f8d7da; /* Rojo suave */
+            padding: 12px;
+            border-radius: 0px;
+            font-family: monospace, monospace;
+            font-size: 12px;
+            white-space: pre;
+        }
     </style>
+
 </head>
 <body>
 
@@ -45,61 +66,63 @@
     }
 </script>
 
-<header>
+<div class="container-fluid">
+    <div id="banner" class="row" style="display: flex; align-items: center;">
+        <div class="col-md-2">
+            <h1 id="waiting">Git</h1>
+        </div>
+        <div class="col-md-7">
+        </div>
+        <div class="col-md-3">
+            <select class="form-control input-sm">
+                {{#repositoryPath repositoryPaths}}
+                    <option>{{repositoryPath}}</option>
+                {{/}}
+            </select>
+        </div>
+    </div>
 
-    <h1 id="waiting">
-        Git
-    </h1>
+    <div id="notification" class="row" style="display:none"></div>
 
-    <span>
-        <label for="repository" style="color:white; font-size:12px">Repository path:</label>
-        <select id="repository" style="max-width: 400px">
-            {{#repositoryPath repositoryPaths}}
-                <option>{{repositoryPath}}</option>
-            {{/}}
-        </select>
-    </span>
+    <div class="row">
+        <div class="col-xs-12 col-md-3">
 
-</header>
+            <h3>Branches</h3>
 
-<div id="notification" class="notification" style="display:none"></div>
-
-<main>
-    <div class="panel left-panel">
-        <h2>Branches</h2>
-        <ul>
-            {{#branch branches}}
-            <li class="branch {{?branch.current}}active{{/}} text file-status">
-                <span class="code">{{branch.name}}</span>
-                <span>
+            <ul>
+                {{#branch branches}}
+                <li class="branch {{?branch.current}}active{{/}} text file-status">
+                    <span class="code">{{branch.name}}</span>
+                    <span>
                     {{^branch.current}}
                         <button class="button-chip" onclick="patch('{{servlet-context}}/branch?branchName={{branch.name}}', {})">Checkout</button>
                     {{/}}
                 </span>
-            </li>
-            {{/}}
-        </ul>
-    </div>
-    <div class="panel middle-panel">
-        <h2>Status & Commits</h2>
-
-        {{? status.mergeConflict}}
-        <div class="conflict-warning">
-            ⚠️ Estás en medio de un merge. Resuelve los conflictos para continuar.
+                </li>
+                {{/}}
+            </ul>
         </div>
-        {{/}}
+        <div class="col-xs-12 col-md-6">
 
-        <button class="" onclick="patch('{{servlet-context}}/commit/pull', {})"><big>⭳</big> Pull</button>
-        <br/>
-        <br/>
+            <h3>Status & Commits</h3>
 
-        {{? status.stagedFiles}}
+            {{? status.mergeConflict}}
+            <div class="conflict-warning">
+                ⚠️ Estás en medio de un merge. Resuelve los conflictos para continuar.
+            </div>
+            {{/}}
+
+            <button class="btn btn-primary" onclick="patch('{{servlet-context}}/commit/pull', {})"><big>⭳</big> Pull</button>
+            <br/>
+            <br/>
+
+            {{? status.stagedFiles}}
             <div class="section-staged">
                 {{#file status.stagedFiles}}
                 <div class="file-status">
                     <span class="code">{{file.fileName}}</span>
                     <div class="file-actions">
-                        <button class="button-chip" title="(use git restore --staged <file>... to unstage)"
+                        <button class="btn btn-default btn-xs" title="(use git restore --staged <file>... to unstage)"
                                 onclick="patch('{{servlet-context}}/stage/restore-staged?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Restore
                         </button>
@@ -107,19 +130,19 @@
                 </div>
                 {{/}}
             </div>
-        {{/}}
+            {{/}}
 
-        {{? status.modifiedFiles}}
+            {{? status.modifiedFiles}}
             <div class="section-modified">
                 {{#file status.modifiedFiles}}
                 <div class="file-status">
                     <span class="code">{{file.fileName}}</span>
                     <div class="file-actions">
-                        <button class="button-chip" title="(use git add <file>... to update what will be committed)" style="display: inline-block;"
+                        <button class="btn btn-default btn-xs" title="(use git add <file>... to update what will be committed)" style="display: inline-block;"
                                 onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Add
                         </button>
-                        <button class="button-chip" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;"
+                        <button class="btn btn-default btn-xs" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;"
                                 onclick="patch('{{servlet-context}}/stage/restore?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Restore
                         </button>
@@ -127,15 +150,15 @@
                 </div>
                 {{/}}
             </div>
-        {{/}}
+            {{/}}
 
-        {{? status.untrackedFiles}}
+            {{? status.untrackedFiles}}
             <div class="section-untracked">
                 {{#file status.untrackedFiles}}
                 <div class="file-status">
                     <span class="code">{{file.fileName}}</span>
                     <div class="file-actions">
-                        <button class="button-chip" title="(use git add <file>... to include in what will be committed)"
+                        <button class="btn btn-default btn-xs" title="(use git add <file>... to include in what will be committed)"
                                 onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Add
                         </button>
@@ -143,66 +166,62 @@
                 </div>
                 {{/}}
             </div>
-        {{/}}
+            {{/}}
 
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-            {{?status.totalFiles}}
-                <button onclick="patch('{{servlet-context}}/stage/add-all', {})">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                {{?status.totalFiles}}
+                <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/add-all', {})">
                     <big>+</big> Add all
                 </button>
-            {{:}}
-                <button disabled><big>+</big> Add all</button>
-            {{/}}
-
-            <div style="display: flex; align-items: center;">
-                <input type="text" placeholder="Commit message" style="width: 300px; display: inline-block; margin-bottom: 0">
-                {{? status.stagedFiles}}
-                    <button class="important"><big>↷</big> Commit</button>
                 {{:}}
-                    <button disabled><big>↷</big> Commit</button>
+                <button class="btn btn-default" disabled><big>+</big> Add all</button>
                 {{/}}
-                &nbsp;
-                <button class="important2"><big>⭱</big> Push</button>
+
+                <div style="display: flex; align-items: center;">
+                    <input type="text" placeholder="Commit message" class="form-control">
+                    {{? status.stagedFiles}}
+                        <button class="btn btn-primary"><big>↷</big> Commit</button>
+                    {{:}}
+                        <button class="btn btn-primary" disabled><big>↷</big> Commit</button>
+                    {{/}}
+                    &nbsp;
+                    <button class="btn btn-danger"><big>⭱</big> Push</button>
+                </div>
             </div>
-        </div>
 
-        <br/>
-        <br/>
-        <br/>
+            <br/>
+            <br/>
+            <br/>
 
-        <h2>Latest Commits</h2>
-        {{#commit commits}}
-        <div class="commit">
-            {{!}}
+            <h3>Latest Commits</h3>
+
+            {{#commit commits}}
+            <div class="commit">
+                {{!}}
                 {{commit.hash}}
-            {{/}}
-            <span>
+                {{/}}
+                <span>
                 <div class="code">
                     {{commit.message}}
                 </div>
                 <small><small>{{commit.author}} - {{commit.timeAgo}}</small></small>
             </span>
-            {{#branchRef commit.branchRefs}}
+                {{#branchRef commit.branchRefs}}
                 <span class="tag">{{branchRef}}</span>
+                {{/}}
+            </div>
             {{/}}
         </div>
-        {{/}}
-    </div>
+        <div class="col-xs-12 col-md-3">
 
+            <h3>Stashes</h3>
 
+            <button onclick="patch('{{servlet-context}}/stash/push', {})"><big>↴</big> Push Stash</button>
+            <br/>
 
-
-
-
-    <div class="panel right-panel">
-        <h2>Stashes</h2>
-
-        <button onclick="patch('{{servlet-context}}/stash/push', {})"><big>↴</big> Push Stash</button>
-        <br/>
-
-        <ul>
-            {{#stash stashes}}
-            <li class="stash">
+            <ul>
+                {{#stash stashes}}
+                <li class="stash">
                 <span class="code">
                     {{stash.id}}<br/>
                     <small style="color: gray">
@@ -210,16 +229,17 @@
                         - {{stash.timeAgo}}
                     </small>
                 </span>
-                <div class="stash-actions">
-                    <button class="button-chip" onclick="patch('{{servlet-context}}/stash/apply?stashId='+encodeURIComponent('{{stash.id}}'), {})">Apply</button>
-                    <button class="button-chip" onclick="patch('{{servlet-context}}/stash/pop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Pop</button>
-                    <button class="button-chip" onclick="patch('{{servlet-context}}/stash/drop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Drop</button>
-                </div>
-            </li>
-            {{/}}
-        </ul>
+                    <div class="stash-actions">
+                        <button class="button-chip" onclick="patch('{{servlet-context}}/stash/apply?stashId='+encodeURIComponent('{{stash.id}}'), {})">Apply</button>
+                        <button class="button-chip" onclick="patch('{{servlet-context}}/stash/pop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Pop</button>
+                        <button class="button-chip" onclick="patch('{{servlet-context}}/stash/drop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Drop</button>
+                    </div>
+                </li>
+                {{/}}
+            </ul>
+        </div>
     </div>
-</main>
+</div>
 
 {{!}}
 <div style="width:100px">
