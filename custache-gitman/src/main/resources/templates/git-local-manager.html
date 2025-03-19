@@ -28,6 +28,44 @@
             font-size: 12px;
             white-space: pre;
         }
+
+        .code {
+            font-family: monospace, monospace;
+            font-size: 14px;
+        }
+
+        div.section-staged {
+            margin-bottom: 6px;
+/*            background-color: #d4edda; *//* Verde suave */
+            padding: 12px;
+            border-radius: 4px;
+        }
+        div.section-modified {
+            margin-bottom: 6px;
+/*            background-color: #fff3cd; *//* Amarillo suave */
+            padding: 12px;
+            border-radius: 4px;
+        }
+        div.section-untracked {
+            margin-bottom: 6px;
+/*            background-color: #f8d7da; *//* Rojo suave */
+            padding: 12px;
+            border-radius: 4px;
+        }
+
+        .tag {
+            background-color: #ffffff;
+            color: #29790b;
+            padding: 3px 10px;
+            border: 1px solid #29790b;
+            border-radius: 8px;
+            font-weight: normal;
+            font-size: 10px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: inline-block;
+            margin: 2px;
+        }
+
     </style>
 
 </head>
@@ -37,7 +75,7 @@
     function patch(url, bodyObj) {
 
         $("html").css("cursor", "wait");
-        $('#waiting').html('<img src="/loading.gif" width="50" height="50">');
+        $('#waiting').html('<img src="/loading.gif" width="40" height="40">');
 
         $.ajax({
             url: url, // Reemplaza con la URL de tu backend
@@ -55,7 +93,7 @@
                 console.error('Error en la llamada PATCH:', error);
 
                 $("html").css("cursor", "default");
-                $('#waiting').html("Git");  // TODO
+                $('#waiting').html("");  // TODO
 
                 $("#notification").html(error.responseText).show();
                 $("#notification").click(function(){
@@ -69,7 +107,8 @@
 <div class="container-fluid">
     <div id="banner" class="row" style="display: flex; align-items: center;">
         <div class="col-md-2">
-            <h1 id="waiting">Git</h1>
+           <h1>Git</h1>
+            <div id="waiting"></div>
         </div>
         <div class="col-md-7">
         </div>
@@ -95,7 +134,7 @@
                     <span class="code">{{branch.name}}</span>
                     <span>
                     {{^branch.current}}
-                        <button class="button-chip" onclick="patch('{{servlet-context}}/branch?branchName={{branch.name}}', {})">Checkout</button>
+                        <button class="btn btn-default btn-xs" onclick="patch('{{servlet-context}}/branch?branchName={{branch.name}}', {})">Checkout</button>
                     {{/}}
                 </span>
                 </li>
@@ -107,21 +146,17 @@
             <h3>Status & Commits</h3>
 
             {{? status.mergeConflict}}
-            <div class="conflict-warning">
+            <div class="row conflict-warning">
                 ⚠️ Estás en medio de un merge. Resuelve los conflictos para continuar.
             </div>
             {{/}}
 
-            <button class="btn btn-primary" onclick="patch('{{servlet-context}}/commit/pull', {})"><big>⭳</big> Pull</button>
-            <br/>
-            <br/>
-
             {{? status.stagedFiles}}
-            <div class="section-staged">
+            <div class="section-staged bg-success">
                 {{#file status.stagedFiles}}
-                <div class="file-status">
-                    <span class="code">{{file.fileName}}</span>
-                    <div class="file-actions">
+                <div class="row">
+                    <div class="col-md-10 code">{{file.fileName}}</div>
+                    <div class="col-md-2">
                         <button class="btn btn-default btn-xs" title="(use git restore --staged <file>... to unstage)"
                                 onclick="patch('{{servlet-context}}/stage/restore-staged?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Restore
@@ -133,11 +168,11 @@
             {{/}}
 
             {{? status.modifiedFiles}}
-            <div class="section-modified">
+            <div class="section-modified bg-warning">
                 {{#file status.modifiedFiles}}
-                <div class="file-status">
-                    <span class="code">{{file.fileName}}</span>
-                    <div class="file-actions">
+                <div class="row">
+                    <div class="col-md-10 code">{{file.fileName}}</div>
+                    <div class="col-md-2">
                         <button class="btn btn-default btn-xs" title="(use git add <file>... to update what will be committed)" style="display: inline-block;"
                                 onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Add
@@ -153,11 +188,11 @@
             {{/}}
 
             {{? status.untrackedFiles}}
-            <div class="section-untracked">
+            <div class="section-untracked bg-danger">
                 {{#file status.untrackedFiles}}
-                <div class="file-status">
-                    <span class="code">{{file.fileName}}</span>
-                    <div class="file-actions">
+                <div class="row">
+                    <div class="col-md-10 code">{{file.fileName}}</div>
+                    <div class="col-md-2">
                         <button class="btn btn-default btn-xs" title="(use git add <file>... to include in what will be committed)"
                                 onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Add
@@ -170,11 +205,11 @@
 
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 {{?status.totalFiles}}
-                <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/add-all', {})">
-                    <big>+</big> Add all
-                </button>
+                    <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/add-all', {})">
+                        <big>+</big> Add all
+                    </button>
                 {{:}}
-                <button class="btn btn-default" disabled><big>+</big> Add all</button>
+                    <button class="btn btn-default" disabled><big>+</big> Add all</button>
                 {{/}}
 
                 <div style="display: flex; align-items: center;">
@@ -184,8 +219,8 @@
                     {{:}}
                         <button class="btn btn-primary" disabled><big>↷</big> Commit</button>
                     {{/}}
-                    &nbsp;
-                    <button class="btn btn-danger"><big>⭱</big> Push</button>
+<!--                    &nbsp;-->
+<!--                    <button class="btn btn-danger"><big>⭱</big> Push</button>-->
                 </div>
             </div>
 
@@ -193,22 +228,23 @@
             <br/>
             <br/>
 
-            <h3>Latest Commits</h3>
+            <h3>Latest Local Commits</h3>
+
+            <button class="btn btn-primary" onclick="patch('{{servlet-context}}/commit/pull', {})"><big>⭳</big> Pull</button>
+            <button class="btn btn-danger"><big>⭱</big> Push</button>
 
             {{#commit commits}}
             <div class="commit">
                 {{!}}
-                {{commit.hash}}
+                    {{commit.hash}}
                 {{/}}
-                <span>
+                {{#branchRef commit.branchRefs}}
+                    <span class="tag">{{branchRef}}</span>
+                {{/}}
                 <div class="code">
                     {{commit.message}}
                 </div>
                 <small><small>{{commit.author}} - {{commit.timeAgo}}</small></small>
-            </span>
-                {{#branchRef commit.branchRefs}}
-                <span class="tag">{{branchRef}}</span>
-                {{/}}
             </div>
             {{/}}
         </div>
@@ -216,7 +252,7 @@
 
             <h3>Stashes</h3>
 
-            <button onclick="patch('{{servlet-context}}/stash/push', {})"><big>↴</big> Push Stash</button>
+            <button class="btn btn-primary" onclick="patch('{{servlet-context}}/stash/push', {})"><big>↴</big> Push Stash</button>
             <br/>
 
             <ul>
@@ -230,9 +266,9 @@
                     </small>
                 </span>
                     <div class="stash-actions">
-                        <button class="button-chip" onclick="patch('{{servlet-context}}/stash/apply?stashId='+encodeURIComponent('{{stash.id}}'), {})">Apply</button>
-                        <button class="button-chip" onclick="patch('{{servlet-context}}/stash/pop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Pop</button>
-                        <button class="button-chip" onclick="patch('{{servlet-context}}/stash/drop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Drop</button>
+                        <button class="btn btn-default btn-xs" onclick="patch('{{servlet-context}}/stash/apply?stashId='+encodeURIComponent('{{stash.id}}'), {})">Apply</button>
+                        <button class="btn btn-default btn-xs" onclick="patch('{{servlet-context}}/stash/pop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Pop</button>
+                        <button class="btn btn-default btn-xs" onclick="patch('{{servlet-context}}/stash/drop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Drop</button>
                     </div>
                 </li>
                 {{/}}
