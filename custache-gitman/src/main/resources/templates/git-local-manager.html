@@ -7,21 +7,29 @@
     <title>Git Control Panel</title>
     <script src="/jquery-3.7.1.min.js"></script>
     <style>
-        {{!}}{{> css.css}}{{/}}
+
         {{> bootstrap.css}}
 
         #banner {
             background-color: #F05033;
             color: #fff;
-/*            padding: 5px 10px;*/
-/*            display: flex;*/
-/*            justify-content: space-between;*/
-/*            align-items: center;*/
+            /*            padding: 5px 10px;*/
+            /*            display: flex;*/
+            /*            justify-content: space-between;*/
+            /*            align-items: center;*/
         }
 
-        #notification {
+        #error-notification {
         /*    margin-bottom: 10px;*/
             background-color: #f8d7da; /* Rojo suave */
+            padding: 12px;
+            border-radius: 0px;
+            font-family: monospace, monospace;
+            font-size: 12px;
+            white-space: pre;
+        }
+        #success-notification {
+            background-color: #d4edda;
             padding: 12px;
             border-radius: 0px;
             font-family: monospace, monospace;
@@ -34,36 +42,10 @@
             font-size: 14px;
         }
 
-        div.section-staged {
+        div.section-stage {
             margin-bottom: 6px;
-/*            background-color: #d4edda; *//* Verde suave */
             padding: 12px;
             border-radius: 4px;
-        }
-        div.section-modified {
-            margin-bottom: 6px;
-/*            background-color: #fff3cd; *//* Amarillo suave */
-            padding: 12px;
-            border-radius: 4px;
-        }
-        div.section-untracked {
-            margin-bottom: 6px;
-/*            background-color: #f8d7da; *//* Rojo suave */
-            padding: 12px;
-            border-radius: 4px;
-        }
-
-        .tag {
-            background-color: #ffffff;
-            color: #29790b;
-            padding: 3px 10px;
-            border: 1px solid #29790b;
-            border-radius: 8px;
-            font-weight: normal;
-            font-size: 10px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            display: inline-block;
-            margin: 2px;
         }
 
         ul {
@@ -101,7 +83,10 @@
             success: function(respuesta) {
                 // Maneja la respuesta exitosa del backend
                 console.log('Respuesta del backend:', respuesta);
-                location.reload();
+
+                //location.reload();
+                reloadPage(respuesta);
+                $("html").css("cursor", "default");
             },
             error: function(error) {
                 // Maneja los errores de la llamada
@@ -110,39 +95,73 @@
                 $("html").css("cursor", "default");
                 $('#waiting').html("");  // TODO
 
-                $("#notification").html(error.responseText).show();
-                $("#notification").click(function(){
-                    $("#notification").hide();
-                });
+                $("#success-notification").hide();
+                $("#error-notification").html(error.responseText).show();
+            }
+        });
+    }
+
+    function reloadPage(successMessage) {
+        $.ajax({
+            url: "{{servlet-context}}?successNotification="+encodeURIComponent(successMessage),
+            type: 'GET',
+            success: function(result) {
+                // Replace the entire HTML document with the result
+                console.log('Respuesta del backend:', result);
+
+                // Replace the current document's content with the new HTML content
+                document.open();
+                document.write(result);
+                document.close();
+            },
+            error: function(error) {
+                console.error('Error:', error);
             }
         });
     }
 </script>
 
+
 <div class="container-fluid">
     <div id="banner" class="row" style="display: flex; align-items: center;">
         <div id="waiting" class="col-md-2">
         </div>
-        <div class="col-md-2">
-            <h1>Git</h1>
-        </div>
-        <div class="col-md-7">
+        <div class="col-md-9">
+            <h1>Git Control Panel</h1>
         </div>
         <div class="col-md-3">
-            <select class="form-control input-sm">
-                {{#repositoryPath repositoryPaths}}
-                    <option>{{repositoryPath}}</option>
+            <select class="form-control input-sm" onchange="patch('{{servlet-context}}/repository?repositoryPath='+this.value, {})">
+                {{#repository repositories}}
+                    <option value="{{repository.path}}" {{?repository.selected}}selected{{/}}>{{repository.path}}</option>
                 {{/}}
             </select>
         </div>
     </div>
 
-    <div id="notification" class="row" style="display:none"></div>
+    <div id="error-notification" class="row" style="display:none"></div>
+    {{?successNotification}}
+        <div id="success-notification" class="row">{{successNotification}}</div>
+    {{:}}
+        <div id="success-notification" class="row" style="display:none"></div>
+    {{/}}
+
+    <script>
+        $("#error-notification").click(function(){
+            $("#error-notification").hide();
+        });
+        $("#success-notification").click(function(){
+            $("#success-notification").hide();
+        });
+    </script>
 
     <div class="row">
         <div class="col-xs-12 col-md-3">
 
             <h3>Branches</h3>
+
+            <button class="btn btn-primary" onclick="patch('{{servlet-context}}/branch/fetch', {})">Fetch</button>
+            <br/>
+            <br/>
 
             <ul>
                 {{#branch branches}}
@@ -168,76 +187,98 @@
             {{/}}
 
             {{? status.stagedFiles}}
-            <div class="section-staged bg-success">
-                {{#file status.stagedFiles}}
-                <div class="row">
-                    <div class="col-md-10 code">{{file.fileName}}</div>
-                    <div class="col-md-2">
-                        <button class="btn btn-default btn-xs" title="(use git restore --staged <file>... to unstage)"
-                                onclick="patch('{{servlet-context}}/stage/restore-staged?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
-                            Restore
-                        </button>
+                <div class="section-stage bg-success">
+                    {{#file status.stagedFiles}}
+                    <div class="row">
+                        <div class="col-md-10 code">{{file.fileName}}</div>
+                        <div class="col-md-2">
+                            <button class="btn btn-default btn-xs" title="(use git restore --staged <file>... to unstage)"
+                                    onclick="patch('{{servlet-context}}/stage/restore-staged?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Restore
+                            </button>
+                            <button class="btn btn-default btn-xs"
+                                    onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Diff
+                            </button>
+                        </div>
                     </div>
+                    {{/}}
                 </div>
-                {{/}}
-            </div>
             {{/}}
 
             {{? status.modifiedFiles}}
-            <div class="section-modified bg-warning">
-                {{#file status.modifiedFiles}}
-                <div class="row">
-                    <div class="col-md-10 code">{{file.fileName}}</div>
-                    <div class="col-md-2">
-                        <button class="btn btn-default btn-xs" title="(use git add <file>... to update what will be committed)" style="display: inline-block;"
-                                onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
-                            Add
-                        </button>
-                        <button class="btn btn-default btn-xs" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;"
-                                onclick="patch('{{servlet-context}}/stage/restore?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
-                            Restore
-                        </button>
+                <div class="section-stage bg-warning">
+                    {{#file status.modifiedFiles}}
+                    <div class="row">
+                        <div class="col-md-10 code">{{file.fileName}}</div>
+                        <div class="col-md-2">
+                            <button class="btn btn-default btn-xs" title="(use git add <file>... to update what will be committed)" style="display: inline-block;"
+                                    onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Add
+                            </button>
+                            <button class="btn btn-default btn-xs" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;"
+                                    onclick="patch('{{servlet-context}}/stage/restore?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Restore
+                            </button>
+                            <button class="btn btn-default btn-xs"
+                                    onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Diff
+                            </button>
+                        </div>
                     </div>
+                    {{/}}
                 </div>
-                {{/}}
-            </div>
             {{/}}
 
             {{? status.untrackedFiles}}
-            <div class="section-untracked bg-danger">
-                {{#file status.untrackedFiles}}
-                <div class="row">
-                    <div class="col-md-10 code">{{file.fileName}}</div>
-                    <div class="col-md-2">
-                        <button class="btn btn-default btn-xs" title="(use git add <file>... to include in what will be committed)"
-                                onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
-                            Add
-                        </button>
+                <div class="section-stage bg-danger">
+                    {{#file status.untrackedFiles}}
+                    <div class="row">
+                        <div class="col-md-10 code">{{file.fileName}}</div>
+                        <div class="col-md-2">
+                            <button class="btn btn-default btn-xs" title="(use git add <file>... to include in what will be committed)"
+                                    onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Add
+                            </button>
+                            <button class="btn btn-default btn-xs"
+                                    onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Diff
+                            </button>
+                        </div>
                     </div>
-                </div>
-                {{/}}
-            </div>
-            {{/}}
-
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center;">
-                    <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/add-all', {})">
-                        Add all
-                    </button>
-                    <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/restore-staged-all', {})">
-                        Restore all
-                    </button>
-                </div>
-
-                <div style="display: flex; align-items: center;">
-                    <input type="text" placeholder="Commit message" class="form-control">
-                    {{? status.stagedFiles}}
-                        <button class="btn btn-primary"><big>↷</big> Commit</button>
-                    {{:}}
-                        <button class="btn btn-primary" disabled><big>↷</big> Commit</button>
                     {{/}}
                 </div>
-            </div>
+            {{/}}
+
+            {{? status.hasSomeFile}}
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div style="display: flex; align-items: center;">
+                            <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/add-all', {})">Add all</button>
+                            <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/restore-staged-all', {})">Restore all</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="input-group">
+                            <input id="input-commit-message" type="text" class="form-control" placeholder="Commit message">
+                            <span class="input-group-btn">
+                                <script>
+                                    function commit() {
+                                        var message = document.getElementById('input-commit-message').value;
+                                        var messageEncoded = encodeURIComponent(message);
+                                        patch('{{servlet-context}}/commit?message='+messageEncoded, {})
+                                    }
+                                </script>
+                                <button class="btn btn-primary" type="button" {{^status.stagedFiles}}disabled{{/}} onclick="commit()">
+                                    Commit
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            {{:}}
+                No changes.
+            {{/}}
 
 <!--            <div class="row">-->
 <!--                <div class="col-md-1">-->
@@ -274,8 +315,20 @@
 
             <h3>Latest Local Commits</h3>
 
-            <button class="btn btn-primary" onclick="patch('{{servlet-context}}/commit/pull', {})"><big>⭳</big> Pull</button>
-            <button class="btn btn-danger"><big>⭱</big> Push</button>
+            <div class="row">
+                <div class="col-lg-1">
+                    <button class="btn btn-primary" onclick="patch('{{servlet-context}}/commit/pull', {})"><big>⭳</big> Pull</button>
+                </div>
+                <div class="col-lg-1">
+                    <button class="btn btn-danger" onclick="patch('{{servlet-context}}/commit/push', {})"><big>⭱</big> Push</button>
+                </div>
+                <div class="col-lg-8">
+                </div>
+                <div class="col-lg-2">
+                    <button class="btn btn-danger" onclick="patch('{{servlet-context}}/commit/undo-last', {})">Undo Last Commit</button>
+                </div>
+            </div>
+
             <br/>
             <br/>
 
@@ -286,7 +339,7 @@
                         {{commit.hash}}
                     {{/}}
                     {{#branchRef commit.branchRefs}}
-                        <span class="tag">{{branchRef}}</span>
+                        <span class="label label-success">{{branchRef}}</span>
                     {{/}}
                     <div class="code">
                         {{commit.message}}

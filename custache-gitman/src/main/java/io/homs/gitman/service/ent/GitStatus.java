@@ -19,4 +19,8 @@ public class GitStatus {
     public int getTotalFiles() {
         return stagedFiles.size() + modifiedFiles.size() + untrackedFiles.size();
     }
+
+    public boolean hasSomeFile() {
+        return !stagedFiles.isEmpty() || !modifiedFiles.isEmpty() || !untrackedFiles.isEmpty();
+    }
 }

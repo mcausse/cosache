@@ -3,6 +3,7 @@ package io.homs.gitman.service;
 import io.homs.gitman.repository.GitLocalManagerRepository;
 import io.homs.gitman.service.ent.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,8 @@ public class GitLocalManagerService {
     private final List<String> repositoryPaths;
 
     @Getter
-    private final String currentRepositoryPath;
+    @Setter
+    private String currentRepositoryPath;
 
     public GitLocalManagerService(@Value("${git.repository.paths}") List<String> repositoryPaths) {
         this.repositoryPaths = repositoryPaths;
@@ -136,7 +138,7 @@ public class GitLocalManagerService {
             if (line.trim().isEmpty()) continue;
 
             String statusCode = line.substring(0, 2);
-            String fileName = line.substring(3);
+            String fileName = line.substring(3).replace("\"", "");
 
             if (statusCode.charAt(0) == 'M' || statusCode.charAt(0) == 'A' || statusCode.charAt(0) == 'D' || statusCode.charAt(0) == 'R') {
                 status.getStagedFiles().add(new FileStatus(fileName, statusCode));
@@ -199,7 +201,8 @@ public class GitLocalManagerService {
     }
 
     public String unstageAll() {
-        return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "restore", "--staged", ".");
+        return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "restore", "--staged", ".")
+                + gitRepository.executeCommandThrow(currentRepositoryPath, "git", "restore", ".");
     }
 
     public String discardChanges(String fileName) {
@@ -248,11 +251,36 @@ public class GitLocalManagerService {
         return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "pull", remoteName, currentBranch);
     }
 
+    public String pushCurrentBranch() {
+        String remoteName = getRemoteName();
+        String currentBranch = getCurrentBranch();
+        return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "push", remoteName, currentBranch);
+    }
+
     public String getRemoteName() {
         return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "remote", "show").trim();
     }
 
     public String stageAll() {
         return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "add", ".").trim();
+    }
+
+    public String fetch() {
+        return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "fetch").trim();
+    }
+
+    public String undoLastLocalCommit() {
+        return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "reset", "HEAD~").trim();
+    }
+
+    public String diff(String fileName) {
+        String r = gitRepository.executeCommandThrow(currentRepositoryPath, "git", "diff", fileName).trim();
+        if (r.isEmpty()) {
+            r = gitRepository.executeCommandThrow(currentRepositoryPath, "git", "diff", "--cached", fileName).trim();
+            if (r.isEmpty()) {
+                r = gitRepository.executeCommandThrow(currentRepositoryPath, "echo", fileName).trim();
+            }
+        }
+        return r;
     }
 }
