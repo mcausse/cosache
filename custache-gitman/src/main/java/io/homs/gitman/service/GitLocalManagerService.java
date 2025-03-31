@@ -278,7 +278,7 @@ public class GitLocalManagerService {
         if (r.isEmpty()) {
             r = gitRepository.executeCommandThrow(currentRepositoryPath, "git", "diff", "--cached", fileName).trim();
             if (r.isEmpty()) {
-                r = gitRepository.executeCommandThrow(currentRepositoryPath, "echo", fileName).trim();
+                r = gitRepository.executeCommandThrow(currentRepositoryPath, "cat", fileName).trim();
             }
         }
         return r;

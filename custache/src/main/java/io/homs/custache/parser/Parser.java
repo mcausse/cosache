@@ -211,7 +211,7 @@ public class Parser {
         TemplateAst ignoredBody = parseTemplateUntilTag("{{/}}");
         lexer.consumeChars("{{/}}");
 
-        return new CommentAst(templateUrn, initialRow, initialCol);
+        return new CommentAst(templateUrn, initialRow, initialCol, ignoredBody);
     }
 
     protected IfElseAst parseIfAst() {
