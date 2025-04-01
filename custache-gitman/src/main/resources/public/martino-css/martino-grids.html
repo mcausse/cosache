@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MartinoCSS - Minimalist Grid Framework</title>
+
+    <link rel="stylesheet" href="martino-grids.css">
+
+    <style>
+
+
+        /* Demo styling */
+        .demo-box {
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            height: 100%;
+        }
+
+        .demo-box h4 {
+            margin-top: 0;
+        }
+
+        header {
+            background-color: #343a40;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+
+        .section {
+            padding: 2rem 0;
+        }
+
+        .section-title {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <h1>MartinoCSS</h1>
+            <p>A minimalist CSS Grid Framework compatible with Bootstrap v3.4.1</p>
+        </div>
+    </header>
+
+    <!-- Basic Grid System -->
+    <div class="container section">
+        <h2 class="section-title">Basic Grid System</h2>
+        <div class="row">
+            <div class="col-12"><div class="demo-box text-center"><code>.col-12</code></div></div>
+        </div>
+        <div class="row">
+            <div class="col-6"><div class="demo-box text-center"><code>.col-6</code></div></div>
+            <div class="col-6"><div class="demo-box text-center"><code>.col-6</code></div></div>
+        </div>
+        <div class="row">
+            <div class="col-4"><div class="demo-box text-center"><code>.col-4</code></div></div>
+            <div class="col-4"><div class="demo-box text-center"><code>.col-4</code></div></div>
+            <div class="col-4"><div class="demo-box text-center"><code>.col-4</code></div></div>
+        </div>
+        <div class="row">
+            <div class="col-3"><div class="demo-box text-center"><code>.col-3</code></div></div>
+            <div class="col-3"><div class="demo-box text-center"><code>.col-3</code></div></div>
+            <div class="col-3"><div class="demo-box text-center"><code>.col-3</code></div></div>
+            <div class="col-3"><div class="demo-box text-center"><code>.col-3</code></div></div>
+        </div>
+    </div>
+
+    <!-- Responsive Grid -->
+    <div class="container section">
+        <h2 class="section-title">Responsive Grid</h2>
+        <div class="row">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="demo-box text-center">
+                    <h4>Responsive Column</h4>
+                    <p>xs: Full width<br>sm: Half width<br>md: One-third<br>lg: One-quarter</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="demo-box text-center">
+                    <h4>Responsive Column</h4>
+                    <p>xs: Full width<br>sm: Half width<br>md: One-third<br>lg: One-quarter</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="demo-box text-center">
+                    <h4>Responsive Column</h4>
+                    <p>xs: Full width<br>sm: Half width<br>md: One-third<br>lg: One-quarter</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-12 col-lg-3">
+                <div class="demo-box text-center">
+                    <h4>Responsive Column</h4>
+                    <p>xs: Full width<br>sm: Half width<br>md: Full width<br>lg: One-quarter</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Column Offset -->
+    <div class="container section">
+        <h2 class="section-title">Column Offset</h2>
+        <div class="row">
+            <div class="col-6 offset-3">
+                <div class="demo-box text-center">
+                    <code>.col-6 .offset-3</code>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <div class="demo-box text-center"><code>.col-4</code></div>
+            </div>
+            <div class="col-4 offset-4">
+                <div class="demo-box text-center"><code>.col-4 .offset-4</code></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3 offset-3">
+                <div class="demo-box text-center"><code>.col-3 .offset-3</code></div>
+            </div>
+            <div class="col-3 offset-1">
+                <div class="demo-box text-center"><code>.col-3 .offset-1</code></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Responsive Offset -->
+    <div class="container section">
+        <h2 class="section-title">Responsive Offset</h2>
+        <div class="row">
+            <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+                <div class="demo-box text-center">
+                    <h4>Responsive Offset</h4>
+                    <p>xs: Full width<br>sm: 8-col, offset 2<br>md: 6-col, offset 3<br>lg: 4-col, offset 4</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Visibility -->
+    <div class="container section">
+        <h2 class="section-title">Responsive Visibility</h2>
+        <div class="row">
+            <div class="col-12">
+                <div class="demo-box text-center hidden-xs">
+                    <p>This will be hidden on extra small screens</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="demo-box text-center hidden-sm">
+                    <p>This will be hidden on small screens</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="demo-box text-center hidden-md">
+                    <p>This will be hidden on medium screens</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="demo-box text-center hidden-lg">
+                    <p>This will be hidden on large screens</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fluid Container -->
+    <div class="container-fluid section" style="background-color: #e9ecef;">
+        <div class="container">
+            <h2 class="section-title">Fluid Container</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="demo-box text-center">
+                        <p>This section uses <code>.container-fluid</code> for the outer container, which spans the full width of the viewport</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Alignment -->
+    <div class="container section">
+        <h2 class="section-title">Text Alignment</h2>
+        <div class="row">
+            <div class="col-4">
+                <div class="demo-box text-left">
+                    <code>.text-left</code>
+                    <p>This text is left-aligned.</p>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="demo-box text-center">
+                    <code>.text-center</code>
+                    <p>This text is center-aligned.</p>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="demo-box text-right">
+                    <code>.text-right</code>
+                    <p>This text is right-aligned.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nested Grids -->
+    <div class="container section">
+        <h2 class="section-title">Nested Grids</h2>
+        <div class="row">
+            <div class="col-6">
+                <div class="demo-box">
+                    <h4>Nested Grid Example</h4>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="demo-box text-center" style="background-color: #e2e3e5;">
+                                <code>.col-6</code> nested
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="demo-box text-center" style="background-color: #e2e3e5;">
+                                <code>.col-6</code> nested
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="demo-box">
+                    <h4>Nested Grid Example</h4>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="demo-box text-center" style="background-color: #e2e3e5;">
+                                <code>.col-4</code> nested
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="demo-box text-center" style="background-color: #e2e3e5;">
+                                <code>.col-4</code> nested
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="demo-box text-center" style="background-color: #e2e3e5;">
+                                <code>.col-4</code> nested
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto Layout -->
+    <div class="container section">
+        <h2 class="section-title">Mixed Column Sizes</h2>
+        <div class="row">
+            <div class="col-2">
+                <div class="demo-box text-center"><code>.col-2</code></div>
+            </div>
+            <div class="col-8">
+                <div class="demo-box text-center"><code>.col-8</code></div>
+            </div>
+            <div class="col-2">
+                <div class="demo-box text-center"><code>.col-2</code></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <div class="demo-box text-center"><code>.col-3</code></div>
+            </div>
+            <div class="col-7">
+                <div class="demo-box text-center"><code>.col-7</code></div>
+            </div>
+            <div class="col-2">
+                <div class="demo-box text-center"><code>.col-2</code></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p class="text-center">MartinoCSS - A minimalist CSS Grid Framework compatible with Bootstrap v3.4.1</p>
+        </div>
+    </footer>
+</body>
+</html>

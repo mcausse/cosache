@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = GitController.BASE_URL)
@@ -48,6 +49,7 @@ public class GitController {
                 .with("stashes", stashes)
                 .with("successNotification", successNotification == null ? null : successNotification.trim())
                 .with("servlet-context", "/" + BASE_URL)
+                .with("uuid", UUID.randomUUID())
                 .evaluate();
     }
 
