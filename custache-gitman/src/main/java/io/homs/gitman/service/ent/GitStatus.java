@@ -16,11 +16,7 @@ public class GitStatus {
         this.mergeConflict = mergeConflict;
     }
 
-    public int getTotalFiles() {
-        return stagedFiles.size() + modifiedFiles.size() + untrackedFiles.size();
-    }
-
     public boolean hasSomeFile() {
-        return !stagedFiles.isEmpty() || !modifiedFiles.isEmpty() || !untrackedFiles.isEmpty();
+        return stagedFiles.size() + modifiedFiles.size() + untrackedFiles.size() > 0;
     }
 }
