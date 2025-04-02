@@ -130,17 +130,40 @@
 
             <h3>Branches</h3>
 
-            <button class="btn btn-primary" onclick="patch('{{servlet-context}}/branch/fetch', {})">Fetch</button>
+            <div class="row">
+                <div class="col-md-2 text-left">
+                    <button class="btn btn-primary" onclick="patch('{{servlet-context}}/branch/fetch', {})">Fetch</button>
+                </div>
+                <div class="col-md-10 text-right">
+                    <script>
+                        function createNewBranch() {
+                            var branchName = document.getElementById('input-new-branch').value;
+                            var branchNameEncoded = encodeURIComponent(branchName);
+                            patch('{{servlet-context}}/branch/create?branchName='+branchNameEncoded, {})
+                        }
+                    </script>
+
+
+                    <div class="btn-group">
+                        <input id="input-new-branch" type="text" placeholder="Branch name" size="20" style="margin:0">
+                        <button class="btn btn-danger" onclick="createNewBranch()">New branch</button>
+                    </div>
+                </div>
+            </div>
 
             <ul class="ul-list">
                 {{#branch branches}}
                 <li class="{{?branch.current}}selected{{/}}">
-                    <span>{{branch.name}}</span>
-                    <span>
-                    {{^branch.current}}
-                        <button class="btn btn-secondary btn-xs" onclick="patch('{{servlet-context}}/branch?branchName={{branch.name}}', {})">Checkout</button>
-                    {{/}}
-                </span>
+                    <div class="row">
+                        <div class="col-md-9 text-left">
+                            {{branch.name}}
+                        </div>
+                        <div class="col-md-3 text-right">
+                            {{^branch.current}}
+                                <button class="btn btn-secondary btn-xs" onclick="patch('{{servlet-context}}/branch?branchName={{branch.name}}', {})">Checkout</button>
+                            {{/}}
+                        </div>
+                    </div>
                 </li>
                 {{/}}
             </ul>

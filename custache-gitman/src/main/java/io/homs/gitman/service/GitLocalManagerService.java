@@ -283,4 +283,8 @@ public class GitLocalManagerService {
         }
         return r;
     }
+
+    public String createBranch(String branchName) {
+        return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "checkout", "-b", branchName).trim();
+    }
 }

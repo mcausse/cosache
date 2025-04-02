@@ -69,6 +69,11 @@ public class GitController {
         return gitRepository.switchBranch(branchName);
     }
 
+    @PatchMapping("/branch/create")
+    public String createBranch(@RequestParam(name = "branchName") String branchName) {
+        return gitRepository.createBranch(branchName);
+    }
+
     @PatchMapping("/commit/pull")
     public String pull() {
         return gitRepository.pullCurrentBranch();
