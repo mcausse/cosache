@@ -13,10 +13,6 @@
 
     <style>
 
-        {{!}}
-        {{> bootstrap.css}}
-        {{/}}
-
         html {
             zoom: 0.9;
         }
@@ -134,7 +130,7 @@
 
 
 <div class="container-fluid">
-    <div class="row">
+    <div class="row" style="background-color:#ccc">
         <div id="waiting" class="col-md-1">
         </div>
         <div class="col-md-5 text-left">
@@ -197,7 +193,7 @@
 
             <div class="alert alert-success">
                 <div class="row">
-                    <div class="col-md-12">Changes to be committed:</div>
+                    <small class="col-md-12">Changes to be committed:</small>
                 </div>
                 {{#file status.stagedFiles}}
                 <div class="row">
@@ -218,7 +214,7 @@
 
             <div class="alert alert-warning">
                 <div class="row">
-                    <div class="col-md-12">Changes not staged for commit:</div>
+                    <small class="col-md-12">Changes not staged for commit:</small>
                 </div>
                 {{#file status.modifiedFiles}}
                 <div class="row">
@@ -243,7 +239,7 @@
 
             <div class="alert alert-grey">
                 <div class="row">
-                    <div class="col-md-12">Untracked files:</div>
+                    <small class="col-md-12">Untracked files:</small>
                 </div>
                 {{#file status.untrackedFiles}}
                 <div class="row">
