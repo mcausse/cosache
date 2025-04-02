@@ -109,6 +109,25 @@ h6 {
     color: #666666;
 }
 
+
+.btn-warning {
+    color: #fff;
+    background-color: #e5ab2d;
+    border-color: #e5ab2d;
+}
+
+.btn-warning:hover {
+    background-color: #d58512;
+    border-color: #d58512;
+}
+.btn-warning:disabled {
+    background-color: #e0982f;
+    color: #333;
+    cursor: not-allowed;
+}
+
+
+
 .btn-danger {
     color: #fff;
     background-color: #c9302c;
