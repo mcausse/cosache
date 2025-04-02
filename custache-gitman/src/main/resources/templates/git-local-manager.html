@@ -9,7 +9,7 @@
 
     <link rel="stylesheet" href="martino-css/martino-grids.css?{{uuid}}">
 <!--    <link rel="stylesheet" href="martino-css/martino-buttons.css?{{uuid}}">-->
-    <link rel="stylesheet" href="martino-css/martino-corp.css?{{uuid}}">
+    <link rel="stylesheet" href="martino-css/martino-corp2.css?{{uuid}}">
 
     <style>
 
@@ -115,7 +115,7 @@
 <!--            </div>-->
         </div>
         <div class="col-md-6 text-right">
-            <select class="form-control input-sm" onchange="patch('{{servlet-context}}/repository?repositoryPath='+this.value, {})">
+            <select class="form-control input-sm" onchange="patch('{{servlet-context}}/repository?repositoryPath='+this.value, {})" style="background-color: white">
                 {{#repository repositories}}
                     <option value="{{repository.path}}" {{?repository.selected}}selected{{/}}>{{repository.path}}</option>
                 {{/}}
