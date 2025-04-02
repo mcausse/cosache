@@ -325,9 +325,10 @@ select:focus {
 /* LABELS */
 .label {
     display: inline;
-    padding: 0.2em 0.6em 0.3em;
+    padding: 0.2em 0.6em 0.2em;
     font-size: 75%;
-    font-weight: 600;
+/*    font-weight: 600;*/
+
     line-height: 1;
     color: #fff;
     text-align: center;
@@ -339,7 +340,7 @@ select:focus {
     background-color: var(--primary-color);
 }
 .label-success {
-    background-color: #5cb85c;
+    background-color: #098a09;
 }
 .label-info {
     background-color: #5bc0de;
