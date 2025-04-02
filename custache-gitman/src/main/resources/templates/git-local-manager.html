@@ -8,7 +8,8 @@
     <script src="/jquery-3.7.1.min.js"></script>
 
     <link rel="stylesheet" href="martino-css/martino-grids.css?{{uuid}}">
-    <link rel="stylesheet" href="martino-css/martino-buttons.css?{{uuid}}">
+<!--    <link rel="stylesheet" href="martino-css/martino-buttons.css?{{uuid}}">-->
+    <link rel="stylesheet" href="martino-css/martino-corp.css?{{uuid}}">
 
     <style>
 
@@ -16,13 +17,13 @@
         {{> bootstrap.css}}
         {{/}}
 
+        html {
+            zoom: 0.9;
+        }
+
         #banner {
-            background-color: #F05033;
-            color: #fff;
-            /*            padding: 5px 10px;*/
-            /*            display: flex;*/
-            /*            justify-content: space-between;*/
-            /*            align-items: center;*/
+/*            background-color: #F05033;*/
+/*            color: #fff;*/
         }
 
         #error-notification {
@@ -43,32 +44,32 @@
             white-space: pre;
         }
 
-        .code {
-            font-family: monospace, monospace;
-            font-size: 14px;
-        }
+/*        .code {*/
+/*            font-family: monospace, monospace;*/
+/*            font-size: 14px;*/
+/*        }*/
 
-        div.section-stage {
-            margin-bottom: 6px;
-            padding: 12px;
-            border-radius: 4px;
-        }
+/*        div.section-stage {*/
+/*            margin-bottom: 6px;*/
+/*            padding: 12px;*/
+/*            border-radius: 4px;*/
+/*        }*/
 
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            padding: 5px;
-        }
-        li:nth-child(odd) {
-            background-color: #e0e0e0;
-        }
-        li.active {
-            background-color: #007bff;
-            color: #fff;
-            border-radius: 5px;
-        }
+/*        ul {*/
+/*            list-style-type: none;*/
+/*            padding: 0;*/
+/*        }*/
+/*        li {*/
+/*            padding: 5px;*/
+/*        }*/
+/*        li:nth-child(odd) {*/
+/*            background-color: #e0e0e0;*/
+/*        }*/
+/*        li.active {*/
+/*            background-color: #007bff;*/
+/*            color: #fff;*/
+/*            border-radius: 5px;*/
+/*        }*/
 
 
 
@@ -133,7 +134,7 @@
 
 
 <div class="container-fluid">
-    <div id="banner" class="row" style="display: flex; align-items: center;">
+    <div class="row">
         <div id="waiting" class="col-md-1">
         </div>
         <div class="col-md-5 text-left">
@@ -170,16 +171,14 @@
             <h3>Branches</h3>
 
             <button class="btn btn-primary" onclick="patch('{{servlet-context}}/branch/fetch', {})">Fetch</button>
-<!--            <br/>-->
-<!--            <br/>-->
 
-            <ul>
+            <ul class="ul-list">
                 {{#branch branches}}
-                <li class="branch {{?branch.current}}active{{/}} text file-status">
-                    <span class="code">{{branch.name}}</span>
+                <li class="{{?branch.current}}selected{{/}}">
+                    <span>{{branch.name}}</span>
                     <span>
                     {{^branch.current}}
-                        <button class="btn btn-default btn-xs" onclick="patch('{{servlet-context}}/branch?branchName={{branch.name}}', {})">Checkout</button>
+                        <button class="btn btn-secondary btn-xs" onclick="patch('{{servlet-context}}/branch?branchName={{branch.name}}', {})">Checkout</button>
                     {{/}}
                 </span>
                 </li>
@@ -204,11 +203,11 @@
                 <div class="row">
                     <div class="col-md-9 code">{{file.fileName}}</div>
                     <div class="col-md-3">
-                        <button class="btn btn-default btn-xs" title="(use git restore --staged <file>... to unstage)"
+                        <button class="btn btn-secondary btn-xs" title="(use git restore --staged <file>... to unstage)"
                                 onclick="patch('{{servlet-context}}/stage/restore-staged?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Restore
                         </button>
-                        <button class="btn btn-default btn-xs"
+                        <button class="btn btn-secondary btn-xs"
                                 onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Diff
                         </button>
@@ -225,15 +224,15 @@
                 <div class="row">
                     <div class="col-md-9 code">{{file.fileName}}</div>
                     <div class="col-md-3">
-                        <button class="btn btn-default btn-xs" title="(use git add <file>... to update what will be committed)" style="display: inline-block;"
+                        <button class="btn btn-secondary btn-xs" title="(use git add <file>... to update what will be committed)" style="display: inline-block;"
                                 onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Add
                         </button>
-                        <button class="btn btn-default btn-xs" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;"
+                        <button class="btn btn-secondary btn-xs" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;"
                                 onclick="patch('{{servlet-context}}/stage/restore?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Restore
                         </button>
-                        <button class="btn btn-default btn-xs"
+                        <button class="btn btn-secondary btn-xs"
                                 onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Diff
                         </button>
@@ -250,11 +249,11 @@
                 <div class="row">
                     <div class="col-md-9 code">{{file.fileName}}</div>
                     <div class="col-md-3">
-                        <button class="btn btn-default btn-xs" title="(use git add <file>... to include in what will be committed)"
+                        <button class="btn btn-secondary btn-xs" title="(use git add <file>... to include in what will be committed)"
                                 onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Add
                         </button>
-                        <button class="btn btn-default btn-xs"
+                        <button class="btn btn-secondary btn-xs"
                                 onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
                             Diff
                         </button>
@@ -266,27 +265,24 @@
 
             {{? status.hasSomeFile}}
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-md-4">
                         <div style="display: flex; align-items: center;">
-                            <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/add-all', {})">Add all</button>
-                            <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/restore-staged-all', {})">Restore all</button>
+                            <button class="btn btn-secondary" onclick="patch('{{servlet-context}}/stage/add-all', {})">Add all</button>
+                            <button class="btn btn-secondary" onclick="patch('{{servlet-context}}/stage/restore-staged-all', {})">Restore all</button>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="input-group">
-                            <input id="input-commit-message" type="text" class="form-control" placeholder="Commit message">
-                            <span class="input-group-btn">
-                                <script>
-                                    function commit() {
-                                        var message = document.getElementById('input-commit-message').value;
-                                        var messageEncoded = encodeURIComponent(message);
-                                        patch('{{servlet-context}}/commit?message='+messageEncoded, {})
-                                    }
-                                </script>
-                                <button class="btn btn-primary" type="button" {{^status.stagedFiles}}disabled{{/}} onclick="commit()">
-                                    Commit
-                                </button>
-                            </span>
+                    <div class="col-md-8 text-right">
+                        <script>
+                            function commit() {
+                                var message = document.getElementById('input-commit-message').value;
+                                var messageEncoded = encodeURIComponent(message);
+                                patch('{{servlet-context}}/commit?message='+messageEncoded, {})
+                            }
+                        </script>
+
+                        <div class="btn-group">
+                            <input id="input-commit-message" type="text" placeholder="Commit message" size="50" style="margin:0">
+                            <button class="btn btn-primary" {{^status.stagedFiles}}disabled{{/}} onclick="commit()">Commit</button>
                         </div>
                     </div>
                 </div>
@@ -330,30 +326,28 @@
             <h3>Latest Local Commits</h3>
 
             <div class="row">
-                <div class="col-lg-1">
+                <div class="col-lg-4 text-left">
                     <button class="btn btn-primary" onclick="patch('{{servlet-context}}/commit/pull', {})"><big>⭳</big> Pull</button>
-                </div>
-                <div class="col-lg-1">
                     <button class="btn btn-danger" onclick="patch('{{servlet-context}}/commit/push', {})"><big>⭱</big> Push</button>
                 </div>
-                <div class="col-lg-8">
+                <div class="col-lg-4">
                 </div>
-                <div class="col-lg-2">
-                    <button class="btn btn-success" onclick="patch('{{servlet-context}}/commit/undo-last', {})">Undo Last Commit</button>
+                <div class="col-lg-4 text-right">
+                    <button class="btn btn-secondary" onclick="patch('{{servlet-context}}/commit/undo-last', {})">Undo Last Commit</button>
                 </div>
             </div>
 
 <!--            <br/>-->
 <!--            <br/>-->
 
-            <ul>
+            <ul class="ul-list">
             {{#commit commits}}
                 <li>
                     {{!}}
                         {{commit.hash}}
                     {{/}}
                     {{#branchRef commit.branchRefs}}
-                        <span class="label label-success">{{branchRef}}</span>
+                        <span class="label label-primary">{{branchRef}}</span>
                     {{/}}
                     <div class="code">
                         {{commit.message}}
@@ -373,19 +367,19 @@
 <!--            <br/>-->
 <!--            <br/>-->
 
-            <ul>
+            <ul class="ul-list">
                 {{#stash stashes}}
-                <li class="stash">
-                    <span class="code">
+                <li>
+                    <span>
                         {{stash.id}}<br/>
                         <small style="color: gray">
                             <i>({{stash.description}})</i> - {{stash.timeAgo}}
                         </small>
                     </span>
                     <div>
-                        <button class="btn btn-default btn-xs" onclick="patch('{{servlet-context}}/stash/apply?stashId='+encodeURIComponent('{{stash.id}}'), {})">Apply</button>
-                        <button class="btn btn-default btn-xs" onclick="patch('{{servlet-context}}/stash/pop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Pop</button>
-                        <button class="btn btn-default btn-xs" onclick="patch('{{servlet-context}}/stash/drop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Drop</button>
+                        <button class="btn btn-secondary btn-xs" onclick="patch('{{servlet-context}}/stash/apply?stashId='+encodeURIComponent('{{stash.id}}'), {})">Apply</button>
+                        <button class="btn btn-secondary btn-xs" onclick="patch('{{servlet-context}}/stash/pop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Pop</button>
+                        <button class="btn btn-secondary btn-xs" onclick="patch('{{servlet-context}}/stash/drop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Drop</button>
                     </div>
                 </li>
                 {{/}}
@@ -394,16 +388,6 @@
     </div>
 </div>
 
-{{!}}
-<div style="width:100px">
-    <button class="">Default</button>
-    <button class="secondary">secondary</button>
-    <button class="button-chip">chip</button>
-    <button class="" disabled>disabled</button>
-    <button class="important">important</button>
-    <button class="important2">important2</button>
-</div>
-{{/}}
 
 </body>
 </html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="martino-corp.css?{{uuid}}">
+</head>
+<body>
+
+<h1>H1 Header</h1>
+
+<div class="card">
+    <h2>H2 Header</h2>
+    <h3>H3 Header</h3>
+    <h4>H4 Header</h4>
+    <h5>H5 Header</h5>
+    <h6>H6 Header</h6>
+</div>
+
+<div class="card">
+    <button class="btn btn-primary">Button</button>
+    <button class="btn btn-secondary">Button</button>
+    <button class="btn btn-danger">Button</button>
+
+    <button class="btn btn-primary" disabled>Button</button>
+    <button class="btn btn-secondary" disabled>Button</button>
+    <button class="btn btn-danger" disabled>Button</button>
+
+    <button class="btn btn-primary btn-lg">Button</button>
+    <button class="btn btn-primary btn-sm">Button</button>
+    <button class="btn btn-primary btn-xs">Button</button>
+
+
+    <div class="btn-group">
+        <button class="btn btn-primary">Left</button>
+        <button class="btn btn-secondary">Middle</button>
+        <button class="btn btn-danger">Right</button>
+    </div>
+
+</div>
+
+<div class="card">
+    <form>
+        <label for="input1" class="form-label">Input:</label>
+        <input id="input1" type="text" class="form-control" placeholder="Input">
+
+        <label for="input2" class="form-label form-label-inline">Input:</label>
+        <input id="input2" type="text" class="form-control" placeholder="Input">
+
+        <div class="btn-group">
+            <input id="input3" type="text" placeholder="Input">
+            <button class="btn btn-primary">Left</button>
+        </div>
+    </form>
+</div>
+
+
+
+<div class="card" style="width:900px">
+    <label for="from-date">From:
+        <table style="width: 100%">
+            <tr>
+                <td style="width: 50%">
+                    <input type="date" id="from-date" name="from-date" value="{{filters.fromDate}}">
+                </td>
+                <td style="width: 50%">
+                    <input type="time" id="from-time" name="from-time" value="{{filters.fromTime}}">
+                </td>
+            </tr>
+        </table>
+    </label>
+    <label for="to-date">To:
+        <table style="width: 100%">
+            <tr>
+                <td style="width: 50%">
+                    <input type="date" id="to-date" name="to-date" value="{{filters.toDate}}">
+                </td>
+                <td style="width: 50%">
+                    <input type="time" id="to-time" name="to-time" value="{{filters.toTime}}">
+                </td>
+            </tr>
+        </table>
+    </label>
+
+    <div style="display: flex;">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Collect system data <b><up>*</up></b></button>
+        <span style="flex: 1;"></span>
+        <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="downloadPage()">Download Report</button>
+    </div>
+</div>
+
+<div class="card">
+    <ul class="ul-list">
+        <li>Jou</li>
+        <li>Juas</li>
+        <li>Juan</li>
+        <li class="selected">Pepe</li>
+    </ul>
+</div>
+
+<pre>lñkhjlkjhlkjh</pre>
+
+
+</body>
+</html>
