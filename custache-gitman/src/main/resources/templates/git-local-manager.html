@@ -34,6 +34,11 @@
             font-size: 12px;
             white-space: pre;
         }
+
+        code {
+            font-family: monospace, monospace;
+            font-size: 0.8em;
+        }
     </style>
 
 </head>
@@ -132,7 +137,7 @@
 
             <div class="row">
                 <div class="col-md-2 text-left">
-                    <button class="btn btn-primary" onclick="patch('{{servlet-context}}/branch/fetch', {})">Fetch</button>
+                    <button class="btn btn-primary" onclick="patch('{{servlet-context}}/branch/fetch', {})">⇊ Fetch</button>
                 </div>
                 <div class="col-md-10 text-right">
                     <script>
@@ -156,7 +161,7 @@
                 <li class="{{?branch.current}}selected{{/}}">
                     <div class="row">
                         <div class="col-md-9 text-left">
-                            {{branch.name}}
+                            <code>{{branch.name}}</code>
                         </div>
                         <div class="col-md-3 text-right">
                             {{^branch.current}}
@@ -184,7 +189,7 @@
                 </div>
                 {{#file status.stagedFiles}}
                 <div class="row">
-                    <div class="col-md-9">{{file.fileName}}</div>
+                    <div class="col-md-9"><code>{{file.fileName}}</code></div>
                     <div class="col-md-3 text-right">
                         <div class="btn-group">
                             <button class="btn btn-secondary btn-xs" title="(use git restore --staged <file>... to unstage)"
@@ -207,7 +212,7 @@
                 </div>
                 {{#file status.modifiedFiles}}
                 <div class="row">
-                    <div class="col-md-9">{{file.fileName}}</div>
+                    <div class="col-md-9"><code>{{file.fileName}}</code></div>
                     <div class="col-md-3 text-right">
                         <div class="btn-group">
                             <button class="btn btn-secondary btn-xs" title="(use git add <file>... to update what will be committed)" style="display: inline-block;"
@@ -234,7 +239,7 @@
                 </div>
                 {{#file status.untrackedFiles}}
                 <div class="row">
-                    <div class="col-md-9">{{file.fileName}}</div>
+                    <div class="col-md-9"><code>{{file.fileName}}</code></div>
                     <div class="col-md-3 text-right">
                         <div class="btn-group">
                             <button class="btn btn-secondary btn-xs" title="(use git add <file>... to include in what will be committed)"
@@ -271,7 +276,7 @@
 
                         <div class="btn-group">
                             <input id="input-commit-message" type="text" placeholder="Commit message" size="50" style="margin:0">
-                            <button class="btn btn-primary" {{^status.stagedFiles}}disabled{{/}} onclick="commit()">Commit</button>
+                            <button class="btn btn-primary" {{^status.stagedFiles}}disabled{{/}} onclick="commit()">⇓ Commit</button>
                         </div>
                     </div>
                 </div>
@@ -283,8 +288,8 @@
 
             <div class="row">
                 <div class="col-lg-4 text-left">
-                    <button class="btn btn-primary" onclick="patch('{{servlet-context}}/commit/pull', {})"><big>⭳</big> Pull</button>
-                    <button class="btn btn-danger" onclick="patch('{{servlet-context}}/commit/push', {})"><big>⭱</big> Push</button>
+                    <button class="btn btn-primary" onclick="patch('{{servlet-context}}/commit/pull', {})">⭳ Pull</button>
+                    <button class="btn btn-danger" onclick="patch('{{servlet-context}}/commit/push', {})">⭱ Push</button>
                 </div>
                 <div class="col-lg-4">
                 </div>
@@ -303,7 +308,7 @@
                         <span class="label label-primary">{{branchRef}}</span>
                     {{/}}
                     <div>
-                        {{commit.message}}
+                        <code>{{commit.message}}</code>
                     </div>
                     <small><small>{{commit.author}} - {{commit.timeAgo}}</small></small>
                 </li>
@@ -316,13 +321,13 @@
 
             <h3>Stashes</h3>
 
-            <button class="btn btn-primary" onclick="patch('{{servlet-context}}/stash/push', {})"><big>↴</big> Push Stash</button>
+            <button class="btn btn-primary" onclick="patch('{{servlet-context}}/stash/push', {})">↴ Push Stash</button>
 
             <ul class="ul-list">
                 {{#stash stashes}}
                 <li>
                     <span>
-                        {{stash.id}}<br/>
+                        <code>{{stash.id}}</code><br/>
                         <small style="color: gray">
                             <i>({{stash.description}})</i> - {{stash.timeAgo}}
                         </small>
