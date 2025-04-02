@@ -17,11 +17,6 @@
             zoom: 0.9;
         }
 
-        #banner {
-/*            background-color: #F05033;*/
-/*            color: #fff;*/
-        }
-
         #error-notification {
         /*    margin-bottom: 10px;*/
             background-color: #f8d7da; /* Rojo suave */
@@ -39,37 +34,6 @@
             font-size: 12px;
             white-space: pre;
         }
-
-/*        .code {*/
-/*            font-family: monospace, monospace;*/
-/*            font-size: 14px;*/
-/*        }*/
-
-/*        div.section-stage {*/
-/*            margin-bottom: 6px;*/
-/*            padding: 12px;*/
-/*            border-radius: 4px;*/
-/*        }*/
-
-/*        ul {*/
-/*            list-style-type: none;*/
-/*            padding: 0;*/
-/*        }*/
-/*        li {*/
-/*            padding: 5px;*/
-/*        }*/
-/*        li:nth-child(odd) {*/
-/*            background-color: #e0e0e0;*/
-/*        }*/
-/*        li.active {*/
-/*            background-color: #007bff;*/
-/*            color: #fff;*/
-/*            border-radius: 5px;*/
-/*        }*/
-
-
-
-
     </style>
 
 </head>
@@ -130,7 +94,7 @@
 
 
 <div class="container-fluid">
-    <div class="row" style="background-color:#ccc">
+    <div class="row" style="background-color:#eee">
         <div id="waiting" class="col-md-1">
         </div>
         <div class="col-md-5 text-left">
@@ -286,37 +250,6 @@
                 No changes.
             {{/}}
 
-<!--            <div class="row">-->
-<!--                <div class="col-md-1">-->
-<!--                    <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/add-all', {})">-->
-<!--                        Add all-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--                <div class="col-md-1">-->
-<!--                    <button class="btn btn-default" onclick="patch('{{servlet-context}}/stage/restore-staged-all', {})">-->
-<!--                        Restore all-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--                <div class="col-md-5">-->
-<!--                </div>-->
-<!--                <div class="col-md-3">-->
-<!--                    {{? status.stagedFiles}}-->
-<!--                        <input type="text" placeholder="Commit message" class="form-control">-->
-<!--                    {{:}}-->
-<!--                        <input type="text" placeholder="Commit message" class="form-control" disabled>-->
-<!--                    {{/}}-->
-<!--                </div>-->
-<!--                <div class="col-md-2">-->
-<!--                    {{? status.stagedFiles}}-->
-<!--                        <button class="btn btn-primary"><big>↷</big> Commit</button>-->
-<!--                    {{:}}-->
-<!--                        <button class="btn btn-primary" disabled><big>↷</big> Commit</button>-->
-<!--                    {{/}}-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            <br/>-->
-<!--            <br/>-->
             <br/>
 
             <h3>Latest Local Commits</h3>
@@ -332,9 +265,6 @@
                     <button class="btn btn-secondary" onclick="patch('{{servlet-context}}/commit/undo-last', {})">Undo Last Commit</button>
                 </div>
             </div>
-
-<!--            <br/>-->
-<!--            <br/>-->
 
             <ul class="ul-list">
             {{#commit commits}}
@@ -360,8 +290,6 @@
             <h3>Stashes</h3>
 
             <button class="btn btn-primary" onclick="patch('{{servlet-context}}/stash/push', {})"><big>↴</big> Push Stash</button>
-<!--            <br/>-->
-<!--            <br/>-->
 
             <ul class="ul-list">
                 {{#stash stashes}}
