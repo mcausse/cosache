@@ -30,6 +30,9 @@
 :visited { color: #0000EE; }
 :link:active, :visited:active { color: #0000EE; }
 
+.clickable {
+    cursor: pointer;
+}
 
 /* TITLES H1..H6 */
 

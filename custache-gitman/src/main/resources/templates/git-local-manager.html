@@ -78,6 +78,10 @@
     }
 
     function reloadPage(successMessage) {
+
+        $("html").css("cursor", "wait");
+        $('#waiting').html('<img src="/loading.gif" width="35" height="35">');
+
         $.ajax({
             url: "{{servlet-context}}?successNotification="+encodeURIComponent(successMessage),
             type: 'GET',
@@ -103,7 +107,12 @@
         <div id="waiting" class="col-md-1">
         </div>
         <div class="col-md-5 text-left">
-            <h1>Git Control Panel</h1>
+            <h1 class="clickable" onclick="reloadPage('')">
+                Git Control Panel
+            </h1>
+<!--            <div class="clickable" onclick="reloadPage('')">-->
+<!--                <img src="azulejo.jpg" width="64" height="64">-->
+<!--            </div>-->
         </div>
         <div class="col-md-6 text-right">
             <select class="form-control input-sm" onchange="patch('{{servlet-context}}/repository?repositoryPath='+this.value, {})">

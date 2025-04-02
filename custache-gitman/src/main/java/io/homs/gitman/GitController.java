@@ -24,21 +24,21 @@ public class GitController {
     CachedModelAndView cachedModelAndView;
 
     @Autowired
-    GitLocalManagerService gitRepository;
+    GitLocalManagerService gitService;
 
     @GetMapping
     public String index(@RequestParam(name = "successNotification", required = false) String successNotification
             /*TODO limitació amb diff; això és un URL param, amb limit de longitud; refact to PUT with body*/
     ) {
 
-        List<Branch> branches = gitRepository.getBranches();
-        GitStatus status = gitRepository.getStatus();
-        List<Commit> commits = gitRepository.getRecentCommits(20);
-        List<StashEntry> stashes = gitRepository.getStashes();
+        List<Branch> branches = gitService.getBranches();
+        GitStatus status = gitService.getStatus();
+        List<Commit> commits = gitService.getRecentCommits(20);
+        List<StashEntry> stashes = gitService.getStashes();
 
         final List<Repository> repositoryPaths = new ArrayList<>();
-        for (String repoPath : gitRepository.getRepositoryPaths()) {
-            repositoryPaths.add(new Repository(repoPath, repoPath.equals(gitRepository.getCurrentRepositoryPath())));
+        for (String repoPath : gitService.getRepositoryPaths()) {
+            repositoryPaths.add(new Repository(repoPath, repoPath.equals(gitService.getCurrentRepositoryPath())));
         }
 
         return cachedModelAndView.getOrParse("git-local-manager.html")
@@ -61,91 +61,91 @@ public class GitController {
 
     @PatchMapping("/repository")
     public void setRepositoryPath(@RequestParam(name = "repositoryPath") String repositoryPath) {
-        gitRepository.setCurrentRepositoryPath(repositoryPath);
+        gitService.setCurrentRepositoryPath(repositoryPath);
     }
 
     @PatchMapping("/branch")
     public String checkoutBranch(@RequestParam(name = "branchName") String branchName) {
-        return gitRepository.switchBranch(branchName);
+        return gitService.switchBranch(branchName);
     }
 
     @PatchMapping("/branch/create")
     public String createBranch(@RequestParam(name = "branchName") String branchName) {
-        return gitRepository.createBranch(branchName);
+        return gitService.createBranch(branchName);
     }
 
     @PatchMapping("/commit/pull")
     public String pull() {
-        return gitRepository.pullCurrentBranch();
+        return gitService.pullCurrentBranch();
     }
 
     @PatchMapping("/commit/push")
     public String push() {
-        return gitRepository.pushCurrentBranch();
+        return gitService.pushCurrentBranch();
     }
 
     @PatchMapping("/commit")
     public String commit(@RequestParam(name = "message") String message) {
-        return gitRepository.commitChanges(message);
+        return gitService.commitChanges(message);
     }
 
     @PatchMapping("/commit/undo-last")
     public String undoLastLocalCommit() {
-        return gitRepository.undoLastLocalCommit();
+        return gitService.undoLastLocalCommit();
     }
 
     @PatchMapping("/branch/fetch")
     public String fetch() {
-        return gitRepository.fetch();
+        return gitService.fetch();
     }
 
     @PatchMapping("/stash/push")
     public String stashPush() {
-        return gitRepository.stashChanges(null);
+        return gitService.stashChanges(null);
     }
 
     @PatchMapping("/stash/pop")
     public String stashPop(@RequestParam(name = "stashId") String stashId) {
-        return gitRepository.popStash(stashId);
+        return gitService.popStash(stashId);
     }
 
     @PatchMapping("/stash/apply")
     public String stashApply(@RequestParam(name = "stashId") String stashId) {
-        return gitRepository.applyStash(stashId);
+        return gitService.applyStash(stashId);
     }
 
     @PatchMapping("/stash/drop")
     public String stashDrop(@RequestParam(name = "stashId") String stashId) {
-        return gitRepository.dropStash(stashId);
+        return gitService.dropStash(stashId);
     }
 
     @PatchMapping("/stage/add")
     public String add(@RequestParam(name = "fileName") String fileName) {
-        return gitRepository.stageFile(fileName);
+        return gitService.stageFile(fileName);
     }
 
     @PatchMapping("/stage/restore")
     public String restore(@RequestParam(name = "fileName") String fileName) {
-        return gitRepository.discardChanges(fileName);
+        return gitService.discardChanges(fileName);
     }
 
     @PatchMapping("/stage/restore-staged")
     public String restoreStaged(@RequestParam(name = "fileName") String fileName) {
-        return gitRepository.unstageFile(fileName);
+        return gitService.unstageFile(fileName);
     }
 
     @PatchMapping("/stage/add-all")
     public String addAll() {
-        return gitRepository.stageAll();
+        return gitService.stageAll();
     }
 
     @PatchMapping("/stage/restore-staged-all")
     public String restoreStagedAll() {
-        return gitRepository.unstageAll();
+        return gitService.unstageAll();
     }
 
     @PatchMapping("/stage/diff")
     public String diff(@RequestParam(name = "fileName") String fileName) {
-        return gitRepository.diff(fileName);
+        return gitService.diff(fileName);
     }
 }
