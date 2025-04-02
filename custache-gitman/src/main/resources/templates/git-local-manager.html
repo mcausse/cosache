@@ -184,16 +184,18 @@
                 </div>
                 {{#file status.stagedFiles}}
                 <div class="row">
-                    <div class="col-md-9 code">{{file.fileName}}</div>
-                    <div class="col-md-3">
-                        <button class="btn btn-secondary btn-xs" title="(use git restore --staged <file>... to unstage)"
-                                onclick="patch('{{servlet-context}}/stage/restore-staged?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
-                            Restore
-                        </button>
-                        <button class="btn btn-secondary btn-xs"
-                                onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
-                            Diff
-                        </button>
+                    <div class="col-md-9">{{file.fileName}}</div>
+                    <div class="col-md-3 text-right">
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-xs" title="(use git restore --staged <file>... to unstage)"
+                                    onclick="patch('{{servlet-context}}/stage/restore-staged?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Restore
+                            </button>
+                            <button class="btn btn-secondary btn-xs"
+                                    onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Diff
+                            </button>
+                        </div>
                     </div>
                 </div>
                 {{/}}
@@ -205,20 +207,22 @@
                 </div>
                 {{#file status.modifiedFiles}}
                 <div class="row">
-                    <div class="col-md-9 code">{{file.fileName}}</div>
-                    <div class="col-md-3">
-                        <button class="btn btn-secondary btn-xs" title="(use git add <file>... to update what will be committed)" style="display: inline-block;"
-                                onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
-                            Add
-                        </button>
-                        <button class="btn btn-secondary btn-xs" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;"
-                                onclick="patch('{{servlet-context}}/stage/restore?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
-                            Restore
-                        </button>
-                        <button class="btn btn-secondary btn-xs"
-                                onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
-                            Diff
-                        </button>
+                    <div class="col-md-9">{{file.fileName}}</div>
+                    <div class="col-md-3 text-right">
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-xs" title="(use git add <file>... to update what will be committed)" style="display: inline-block;"
+                                    onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Add
+                            </button>
+                            <button class="btn btn-secondary btn-xs" title="(use git restore <file>... to discard changes in working directory)" style="display: inline-block;"
+                                    onclick="patch('{{servlet-context}}/stage/restore?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Restore
+                            </button>
+                            <button class="btn btn-secondary btn-xs"
+                                    onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Diff
+                            </button>
+                        </div>
                     </div>
                 </div>
                 {{/}}
@@ -230,16 +234,18 @@
                 </div>
                 {{#file status.untrackedFiles}}
                 <div class="row">
-                    <div class="col-md-9 code">{{file.fileName}}</div>
-                    <div class="col-md-3">
-                        <button class="btn btn-secondary btn-xs" title="(use git add <file>... to include in what will be committed)"
-                                onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
-                            Add
-                        </button>
-                        <button class="btn btn-secondary btn-xs"
-                                onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
-                            Diff
-                        </button>
+                    <div class="col-md-9">{{file.fileName}}</div>
+                    <div class="col-md-3 text-right">
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-xs" title="(use git add <file>... to include in what will be committed)"
+                                    onclick="patch('{{servlet-context}}/stage/add?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Add
+                            </button>
+                            <button class="btn btn-secondary btn-xs"
+                                    onclick="patch('{{servlet-context}}/stage/diff?fileName='+encodeURIComponent('{{file.fileName}}'), {})">
+                                Diff
+                            </button>
+                        </div>
                     </div>
                 </div>
                 {{/}}
@@ -296,7 +302,7 @@
                     {{#branchRef commit.branchRefs}}
                         <span class="label label-primary">{{branchRef}}</span>
                     {{/}}
-                    <div class="code">
+                    <div>
                         {{commit.message}}
                     </div>
                     <small><small>{{commit.author}} - {{commit.timeAgo}}</small></small>
@@ -321,7 +327,7 @@
                             <i>({{stash.description}})</i> - {{stash.timeAgo}}
                         </small>
                     </span>
-                    <div>
+                    <div class="btn-group">
                         <button class="btn btn-secondary btn-xs" onclick="patch('{{servlet-context}}/stash/apply?stashId='+encodeURIComponent('{{stash.id}}'), {})">Apply</button>
                         <button class="btn btn-secondary btn-xs" onclick="patch('{{servlet-context}}/stash/pop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Pop</button>
                         <button class="btn btn-secondary btn-xs" onclick="patch('{{servlet-context}}/stash/drop?stashId='+encodeURIComponent('{{stash.id}}'), {})">Drop</button>
