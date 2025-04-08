@@ -8,12 +8,7 @@
         <artifactId>custache-templates</artifactId>
         <version>0.0.3</version>
     </parent>
-    <!--    <parent>-->
-    <!--        <groupId>org.springframework.boot</groupId>-->
-    <!--        <artifactId>spring-boot-starter-parent</artifactId>-->
-    <!--        <version>3.4.3</version>-->
-    <!--        <relativePath/> &lt;!&ndash; lookup parent from repository &ndash;&gt;-->
-    <!--    </parent>-->
+
     <artifactId>custache-gitman</artifactId>
 
     <properties>
@@ -56,14 +51,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-<!--                <configuration>-->
-<!--                    <annotationProcessorPaths>-->
-<!--                        <path>-->
-<!--                            <groupId>org.projectlombok</groupId>-->
-<!--                            <artifactId>lombok</artifactId>-->
-<!--                        </path>-->
-<!--                    </annotationProcessorPaths>-->
-<!--                </configuration>-->
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

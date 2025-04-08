@@ -1,4 +1,4 @@
-package io.homs.gitman;
+package io.homs.gitman.controller;
 
 import io.homs.custache.CachedModelAndView;
 import io.homs.gitman.service.GitLocalManagerService;
@@ -44,12 +44,14 @@ public class GitController {
         return cachedModelAndView.getOrParse("git-local-manager.html")
                 .with("repositories", repositoryPaths)
                 .with("branches", branches)
+                .with("currentBranch", gitService.getCurrentBranch())
                 .with("status", status)
                 .with("commits", commits)
                 .with("stashes", stashes)
                 .with("successNotification", successNotification == null ? null : successNotification.trim())
                 .with("servlet-context", "/" + BASE_URL)
                 .with("uuid", UUID.randomUUID())
+                .with("utils", new Utils())
                 .evaluate();
     }
 
