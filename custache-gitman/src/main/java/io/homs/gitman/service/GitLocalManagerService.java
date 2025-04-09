@@ -37,9 +37,12 @@ public class GitLocalManagerService {
     @Setter
     private String currentRepositoryPath;
 
-    public GitLocalManagerService(@Value("${git.repository.paths}") List<String> repositoryPaths) {
+    private final String mvnCommand;
+
+    public GitLocalManagerService(@Value("${git.repository.paths}") List<String> repositoryPaths, @Value("${mvn.dir}") String mvnCommand) {
         this.repositoryPaths = repositoryPaths;
         this.currentRepositoryPath = repositoryPaths.get(0);
+        this.mvnCommand = mvnCommand;
     }
 
     public List<Branch> getBranches() {
@@ -287,4 +290,23 @@ public class GitLocalManagerService {
     public String createBranch(String branchName) {
         return gitRepository.executeCommandThrow(currentRepositoryPath, "git", "checkout", "-b", branchName).trim();
     }
+
+    public boolean pipelineBuild() {
+        try {
+            String r = gitRepository.executeCommandThrow(currentRepositoryPath, mvnCommand, "clean", "package", "-DskipTests").trim();
+            return r.contains("BUILD SUCCESS");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean pipelineTest() {
+        try {
+            String r = gitRepository.executeCommandThrow(currentRepositoryPath, mvnCommand, "clean", "package").trim();
+            return r.contains("BUILD SUCCESS");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

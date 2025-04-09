@@ -33,7 +33,7 @@ class GitLocalManagerServiceTest {
     @BeforeEach
     void setUp() {
         // En lugar de usar @InjectMocks, creamos manualmente el servicio con los parámetros necesarios
-        service = new GitLocalManagerService(REPOSITORY_PATHS);
+        service = new GitLocalManagerService(REPOSITORY_PATHS, null);
         // Inyectamos manualmente el mock del repositorio
         service.gitRepository = gitRepository;
     }

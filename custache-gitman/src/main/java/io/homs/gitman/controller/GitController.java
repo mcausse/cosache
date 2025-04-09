@@ -150,4 +150,21 @@ public class GitController {
     public String diff(@RequestParam(name = "fileName") String fileName) {
         return gitService.diff(fileName);
     }
+
+
+    @PatchMapping("/pipeline/build")
+    public String pipelineBuild() {
+        if (gitService.pipelineBuild()) {
+            return "BUILD SUCCESS";
+        }
+        throw new RuntimeException("BUILD FAILURE");
+    }
+
+    @PatchMapping("/pipeline/test")
+    public String pipelineTest() {
+        if (gitService.pipelineTest()) {
+            return "BUILD SUCCESS";
+        }
+        throw new RuntimeException("BUILD FAILURE");
+    }
 }
