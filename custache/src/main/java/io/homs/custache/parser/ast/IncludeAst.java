@@ -10,18 +10,18 @@ import java.util.List;
 public class IncludeAst extends Ast {
 
     final TemplateLoadingStrategy templateLoadingStrategy;
-    final String templateUrn;
+    final String includeTemplateUrn;
 
     final Ast parseredTemplate;
     final List<MappingPair> mappingPairs;
 
-    public IncludeAst(String templateId, int row, int col, TemplateLoadingStrategy templateLoadingStrategy, String templateUrn, List<MappingPair> mappingPairs) {
+    public IncludeAst(String templateId, int row, int col, TemplateLoadingStrategy templateLoadingStrategy, String includeTemplateUrn, List<MappingPair> mappingPairs) {
         super(templateId, row, col);
         this.templateLoadingStrategy = templateLoadingStrategy;
-        this.templateUrn = templateUrn;
+        this.includeTemplateUrn = includeTemplateUrn;
         this.mappingPairs = mappingPairs;
 
-        Template loadedTemplate = templateLoadingStrategy.loadTemplate(templateUrn);
+        Template loadedTemplate = templateLoadingStrategy.loadTemplate(includeTemplateUrn);
         Parser parser = new Parser(templateLoadingStrategy, loadedTemplate);
         this.parseredTemplate = parser.parse();
     }

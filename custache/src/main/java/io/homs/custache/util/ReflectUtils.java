@@ -33,27 +33,32 @@ public class ReflectUtils {
         try {
             Class<?> targetClass = target.getClass();
             for (Method method : targetClass.getMethods()) {
-                if (method.getName().equals(methodName) && method.getParameterCount() == args.length) {
-                    boolean typesMatches = true;
-                    for (int i = 0; i < method.getParameterCount(); i++) {
-                        if (args[i] != null
-                                && !isAssignableFrom(method.getParameters()[i].getType(), args[i].getClass())) {
-                            typesMatches = false;
-                            break;
-                        }
-                    }
-                    if (typesMatches) {
-                        if (!method.canAccess(target)) {
-                            method.setAccessible(true);
-                        }
-                        return method.invoke(target, args);
-                    }
+                if (method.getName().equals(methodName) && isArgumentTypesMatches(method, args)) {
+//                        if (!method.canAccess(target)) {
+//                            method.setAccessible(true);
+//                        }
+                    return method.invoke(target, args);
                 }
             }
             throw new RuntimeException("no method found for: " + targetClass.getName() + "#" + methodName + Arrays.toString(args));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static boolean isArgumentTypesMatches(Method method, Object[] args) {
+        if (method.getParameterCount() != args.length) {
+            return false;
+        }
+        boolean typesMatches = true;
+        for (int i = 0; i < method.getParameterCount(); i++) {
+            if (args[i] != null
+                    && !isAssignableFrom(method.getParameters()[i].getType(), args[i].getClass())) {
+                typesMatches = false;
+                break;
+            }
+        }
+        return typesMatches;
     }
 
 //    public static Object callStaticMethod(String beanClassName, String methodName, Object[] args) {

@@ -43,14 +43,19 @@ public class CachedModelAndView {
 
     public ModelAndView getOrParse(String urnPart) {
 
-        if (!cachedTemplates.containsKey(urnPart)) {
+//        if (!cachedTemplates.containsKey(urnPart)) {
+//
+//            Template template = templateLoadingStrategy.loadTemplate(urnPart);
+//            Ast templateAst = new Parser(templateLoadingStrategy, template).parse();
+//            cachedTemplates.put(urnPart, templateAst);
+//        }
+//
+//        Ast templateAst = cachedTemplates.get(urnPart);
 
-            Template template = templateLoadingStrategy.loadTemplate(urnPart);
-            Ast templateAst = new Parser(templateLoadingStrategy, template).parse();
-            cachedTemplates.put(urnPart, templateAst);
-        }
-
-        Ast templateAst = cachedTemplates.get(urnPart);
+        Ast templateAst = cachedTemplates.computeIfAbsent(urnPart, key -> {
+            Template template = templateLoadingStrategy.loadTemplate(key);
+            return new Parser(templateLoadingStrategy, template).parse();
+        });
 
         Context ctx = new Context();
         return new ModelAndView(templateAst, ctx);
