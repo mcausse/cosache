@@ -105,33 +105,9 @@ public class Parser {
             case '^' -> parseIfNotAst();
             case '#' -> parseForAst();
             case '>' -> parseInclude();
-//            case '.' -> parseMethodCall();
             default -> parseValue();
         };
     }
-
-//    private MethodCallAst parseMethodCall() {
-//        int initialRow = lexer.getRow();
-//        int initialCol = lexer.getCol();
-//
-//        lexer.consumeChars(".");
-//        lexer.consumeBlanks();
-//        ExpressionAst objectExpression = parseExpression();
-//        lexer.consumeBlanks();
-//        lexer.consumeChars("#");
-//        lexer.consumeBlanks();
-//        String methodName = lexer.consumeWord();
-//        lexer.consumeBlanks();
-//        lexer.consumeChars("(");
-//        lexer.consumeBlanks();
-//        ExpressionAst argumentExpression = parseExpression();
-//        lexer.consumeBlanks();
-//        lexer.consumeChars(")");
-//        lexer.consumeBlanks();
-//        lexer.consumeChars("}}");
-//
-//        return new MethodCallAst(templateUrn, initialRow, initialCol, objectExpression, methodName, argumentExpression);
-//    }
 
     protected ValueAst parseValue() {
         int initialRow = lexer.getRow();
@@ -231,10 +207,10 @@ public class Parser {
 
         lexer.consumeChars("{{/}}");
 
-        return new IfElseAst(templateUrn, initialRow, initialCol, expressionAst, ifAst, elseAst);
+        return new IfElseAst(templateUrn, initialRow, initialCol, expressionAst, ifAst, elseAst, false);
     }
 
-    protected IfNotAst parseIfNotAst() {
+    protected IfElseAst parseIfNotAst() {
         int initialRow = lexer.getRow();
         int initialCol = lexer.getCol();
 
@@ -252,7 +228,7 @@ public class Parser {
         }
 
         lexer.consumeChars("{{/}}");
-        return new IfNotAst(templateUrn, initialRow, initialCol, expressionAst, ifAst, elseAst);
+        return new IfElseAst(templateUrn, initialRow, initialCol, expressionAst, ifAst, elseAst, true);
     }
 
     protected ForAst parseForAst() {
