@@ -29,6 +29,7 @@ public class ForAst extends Ast {
             Context forContext = new Context(context);
             forContext.def(ident, element);
 
+            forContext.def(ident + "-first", i == 0);
             forContext.def(ident + "-odd", i % 2 == 1);
             forContext.def(ident + "-even", i % 2 == 0);
             forContext.def(ident + "-count", i);

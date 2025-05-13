@@ -31,6 +31,10 @@ public class Custache {
     public String evaluate(Ast templateAst, String modelName, Object model) {
         Context ctx = new Context();
         ctx.def(modelName, model);
+        return evaluate(templateAst, ctx);
+    }
+
+    public String evaluate(Ast templateAst, Context ctx) {
         String result = templateAst.evaluate(ctx);
         return result;
     }

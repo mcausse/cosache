@@ -109,7 +109,7 @@ class CustacheTest {
     private static Stream<Arguments> invalidTemplatesProvider() {
         return Stream.of(
                 Arguments.of("{{#}}", "expected to consume a word, but not; at: urn:1,4", null),
-                Arguments.of("{{#j jou fdghdfgh", "expected: }}, at: urn:1,9", null),
+                Arguments.of("{{#j jou fdghdfgh", "expected: }}, at: urn:1,10", null),
                 Arguments.of("{{#j jou}}", "expected: {{/}}, but eof; at: urn:1,11", null),
                 Arguments.of("{{#jou}}{{/}}", "expected to consume a word, but not; at: urn:1,7", null),
                 Arguments.of("{{#j jou}}{{/}}", "evaluating expression: jou, at: urn:1,6", "class java.lang.Integer cannot be cast to class java.lang.Iterable")
@@ -233,7 +233,7 @@ class CustacheTest {
 
     @Test
     void method_calls_test() {
-        Ast sut = new Parser(Template.of("test", "{{.utils#formatDate(cat.birthDate)}}")).parse();
+        Ast sut = new Parser(Template.of("test", "{{utils.formatDate(cat.birthDate)}}")).parse();
 
         var ctx = new Context();
         ctx.def("cat", new Cat("", new Date(0L)));
@@ -244,7 +244,7 @@ class CustacheTest {
 
     @Test
     void method_calls_test__now_with_spaces() {
-        Ast sut = new Parser(Template.of("test", "{{. utils # formatDate ( cat.birthDate ) }}")).parse();
+        Ast sut = new Parser(Template.of("test", "{{utils.formatDate ( cat.birthDate ) }}")).parse();
 
         var ctx = new Context();
         ctx.def("cat", new Cat("", new Date(0L)));
@@ -255,10 +255,10 @@ class CustacheTest {
 
     @Test
     void method_calls_test__now_with_a_failure() {
-        Ast sut = new Parser(Template.of("test", "{{. utils # formatDate ( cat.name ) }}")).parse();
+        Ast sut = new Parser(Template.of("test", "{{utils.formatDate ( cat.name ) }}")).parse();
 
         var ctx = new Context();
-        ctx.def("cat", new Cat("", new Date(0L)));
+        ctx.def("cat", new Cat("jou", new Date(0L)));
         ctx.def("utils", new Utils());
 
         try {
@@ -266,10 +266,54 @@ class CustacheTest {
 
             fail();
         } catch (Exception e) {
-            assertThat(e).hasMessage("evaluating expression: io.homs.custache.CustacheTest$Utils#formatDate(), at: test:1,3")
-                    .getCause().hasMessage("Method formatDate with argument type class java.lang.String not found in class io.homs.custache.CustacheTest$Utils");
+            assertThat(e).hasMessage("evaluating expression: utils.formatDate(cat.name), at: test:1,3")
+                    .getCause().hasMessage("evaluating expression: utils.formatDate(String:jou)")
+                    .getCause().hasMessage("java.lang.RuntimeException: no method found for: io.homs.custache.CustacheTest$Utils#formatDate[jou]")
+            ;
         }
 
     }
+
+
+    public static class Utils2 {
+        public boolean negate(boolean v) {
+            return !v;
+        }
+
+        public <T> List<T> enList(T v) {
+            return List.of(v);
+        }
+    }
+
+    private static Stream<Arguments> function_based_expressions_provider() {
+        return Stream.of(
+                Arguments.of("{{? utils.negate(dog.alive)}}a{{:}}b{{/}}", "b"),
+                Arguments.of("{{^ utils.negate(dog.alive)}}a{{:}}b{{/}}", "a"),
+
+                Arguments.of("{{? utils.negate(utils.negate(dog.alive))}}a{{:}}b{{/}}", "a"),
+                Arguments.of("{{^ utils.negate(utils.negate(dog.alive))}}a{{:}}b{{/}}", "b"),
+
+                Arguments.of("{{#d utils.enList(dog)}}{{d.name}}{{/}}", "duche")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("function_based_expressions_provider")
+    public void function_based_expressions(String expression, String expectedResult) {
+        final Custache custache = new Custache();
+        Ast templateAst = custache.loadParseredTemplate(new Template("testurn",
+                expression
+        ));
+
+        var ctx = new Context();
+        ctx.def("dog", new Dog("duche", 12, true));
+        ctx.def("utils", new Utils2());
+
+        // Act
+        String r = custache.evaluate(templateAst, ctx);
+
+        assertThat(r).isEqualTo(expectedResult);
+    }
+
 }
 

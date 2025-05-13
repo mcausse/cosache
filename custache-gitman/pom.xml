@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.homs</groupId>
         <artifactId>custache-templates</artifactId>
-        <version>0.0.3</version>
+        <version>0.0.4</version>
     </parent>
 
     <artifactId>custache-gitman</artifactId>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>io.homs</groupId>
             <artifactId>custache-spring</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.4</version>
         </dependency>
 
     </dependencies>

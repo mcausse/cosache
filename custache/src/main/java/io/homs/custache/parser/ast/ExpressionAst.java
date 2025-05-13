@@ -13,42 +13,69 @@ public class ExpressionAst extends Ast {
 
     @Getter
     final List<String> idents;
+    final ExpressionAst expressionArg;
 
-    public ExpressionAst(String templateId, int row, int col, List<String> idents) {
+    public ExpressionAst(String templateId, int row, int col, List<String> idents, ExpressionAst expressionArg) {
         super(templateId, row, col);
         this.idents = idents;
+        this.expressionArg = expressionArg;
     }
 
     @Override
     public String evaluate(Context context) {
         try {
-            return evaluation.evaluateToString(context, idents);
+            if (expressionArg == null) {
+                return evaluation.evaluateToString(context, idents);
+            } else {
+                return evaluation.evaluateToString(context, idents, expressionArg.evaluateToObject(context));
+            }
         } catch (Exception e) {
-            throw new CustacheException("evaluating expression: " + String.join(".", idents) + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
+            throw new CustacheException("evaluating expression: " + this + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
         }
     }
 
     public Object evaluateToObject(Context context) {
         try {
-            return evaluation.evaluateToObject(context, idents);
+            if (expressionArg == null) {
+                return evaluation.evaluateToObject(context, idents);
+            } else {
+                return evaluation.evaluateToObject(context, idents, expressionArg.evaluateToObject(context));
+            }
         } catch (Exception e) {
-            throw new CustacheException("evaluating expression: " + String.join(".", idents) + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
+            throw new CustacheException("evaluating expression: " + this + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
         }
     }
 
     public boolean evaluateToBoolean(Context context) {
         try {
-            return evaluation.evaluateToBoolean(context, idents);
+            if (expressionArg == null) {
+                return evaluation.evaluateToBoolean(context, idents);
+            } else {
+                return evaluation.evaluateToBoolean(context, idents, expressionArg.evaluateToObject(context));
+            }
         } catch (Exception e) {
-            throw new CustacheException("evaluating expression: " + String.join(".", idents) + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
+            throw new CustacheException("evaluating expression: " + this + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
         }
     }
 
     public Iterable<?> evaluateToIterable(Context context) {
         try {
-            return evaluation.evaluateToIterable(context, idents);
+            if (expressionArg == null) {
+                return evaluation.evaluateToIterable(context, idents);
+            } else {
+                return evaluation.evaluateToIterable(context, idents, expressionArg.evaluateToObject(context));
+            }
         } catch (Exception e) {
-            throw new CustacheException("evaluating expression: " + String.join(".", idents) + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
+            throw new CustacheException("evaluating expression: " + this + ", at: ", getTemplateUrn(), getRow(), getCol(), e);
+        }
+    }
+
+    @Override
+    public String toString() {
+        if (expressionArg == null) {
+            return String.join(".", idents);
+        } else {
+            return String.join(".", idents) + "(" + expressionArg + ")";
         }
     }
 }

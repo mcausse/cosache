@@ -1,5 +1,6 @@
 package io.homs.custache.eval;
 
+import io.homs.custache.util.ReflectUtils;
 import lombok.SneakyThrows;
 
 import java.beans.BeanInfo;
@@ -26,6 +27,35 @@ public class Evaluation {
         return v;
     }
 
+    public Object evaluateToObject(Context context, List<String> idents, Object argument) {
+
+        if (idents.isEmpty()) {
+            throw new RuntimeException("no idents");
+        }
+        String varName = idents.get(0);
+
+        Object v = context.get(varName);
+        for (int i = 1; i < idents.size() - 1; i++) {
+            v = getByKey(v, idents.get(i));
+        }
+
+        String methodName = idents.get(idents.size() - 1);
+        final Object r;
+        try {
+            r = invokeMethod(v, methodName, argument);
+        } catch (Exception e) {
+            final String argumentValue;
+            if (argument == null) {
+                argumentValue = "null";
+            } else {
+                argumentValue = argument.getClass().getSimpleName() + ":" + argument;
+            }
+            throw new RuntimeException("evaluating expression: " + String.join(".", idents) + "(" + argumentValue + ")", e);
+        }
+
+        return r;
+    }
+
     public String evaluateToString(Context context, List<String> idents) {
         Object value = evaluateToObject(context, idents);
         return String.valueOf(value);
@@ -38,6 +68,22 @@ public class Evaluation {
 
     public Iterable<Object> evaluateToIterable(Context context, List<String> idents) {
         Object value = evaluateToObject(context, idents);
+        return (Iterable<Object>) value;
+    }
+
+
+    public String evaluateToString(Context context, List<String> idents, Object argument) {
+        Object value = evaluateToObject(context, idents, argument);
+        return String.valueOf(value);
+    }
+
+    public boolean evaluateToBoolean(Context context, List<String> idents, Object argument) {
+        Object value = evaluateToObject(context, idents, argument);
+        return isTrue(value);
+    }
+
+    public Iterable<Object> evaluateToIterable(Context context, List<String> idents, Object argument) {
+        Object value = evaluateToObject(context, idents, argument);
         return (Iterable<Object>) value;
     }
 
@@ -65,7 +111,7 @@ public class Evaluation {
     protected static Object getByKey(Object o, String key) {
 
         if (o == null) {
-            throw new RuntimeException();
+            throw new RuntimeException("null#" + key);
         }
         if (o instanceof Map) {
             Map<String, ?> m = (Map<String, ?>) o;
@@ -97,39 +143,12 @@ public class Evaluation {
                 }
             }
 
-            throw new RuntimeException();
+            throw new RuntimeException(o.getClass().getName() + "#" + key);
         }
     }
 
-    public Object invokeMethod(Object bean, String methodName, Object argument) throws Exception {
-        if (bean == null) {
-            throw new IllegalArgumentException("Bean cannot be null");
-        }
-        if (methodName == null || methodName.isEmpty()) {
-            throw new IllegalArgumentException("Method name cannot be null or empty");
-        }
 
-        Class<?> clazz = bean.getClass();
-        Method method = findMethod(clazz, methodName, argument.getClass());
-
-        if (method == null) {
-            throw new NoSuchMethodException("Method " + methodName + " with argument type " + argument.getClass() + " not found in " + clazz);
-        }
-
-        method.setAccessible(true); // Permite acceder a métodos privados
-        return method.invoke(bean, argument);
-    }
-
-    private Method findMethod(Class<?> clazz, String methodName, Class<?> argumentType) {
-        if (clazz == null) {
-            return null;
-        }
-
-        try {
-            return clazz.getDeclaredMethod(methodName, argumentType);
-        } catch (NoSuchMethodException e) {
-            // Método no encontrado en la clase actual, buscar en la superclase
-            return findMethod(clazz.getSuperclass(), methodName, argumentType);
-        }
+    public Object invokeMethod(Object bean, String methodName, Object argument) {
+        return ReflectUtils.callMethod(bean, methodName, new Object[]{argument});
     }
 }

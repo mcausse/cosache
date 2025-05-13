@@ -16,7 +16,7 @@ import java.util.function.Predicate;
  * <pre>
  *
  * <template>		::= { (TEXT | <tag>) }
- * <tag>			::= <comment> | <if> | <ifnot> | <for> | <include> | <value> | <method-call>
+ * <tag>			::= <comment> | <if> | <ifnot> | <for> | <include> | <value>>
  *
  * <comment> 		::= "{{!}}" <template> "{{/}}"
  * <if>  			::= "{{?" <expression> "}}" <template> ["{{:}}" <template>] "{{/}}"
@@ -24,12 +24,10 @@ import java.util.function.Predicate;
  * <for>  			::= "{{#" IDENT <expression> "}}" <template> "{{/}}"
  * <value> 		    ::= "{{" <expression> "}}"
  *
- * <method-call>    ::= "{{." <expression> "#" IDENT "(" <expression> ")" "}}"
- *
  * <include>	    ::= "{{>" IDENT [<var-mapping>] "}}"
  * <var-mapping>    ::= "(" IDENT "=" <expression> {"," IDENT "=" <expression>} ")"
  *
- * <expression>	    ::= IDENT {"." IDENT}
+ * <expression>	    ::= IDENT {"." IDENT} ["(" <expression> ")"]
  *
  *
  *
@@ -107,33 +105,33 @@ public class Parser {
             case '^' -> parseIfNotAst();
             case '#' -> parseForAst();
             case '>' -> parseInclude();
-            case '.' -> parseMethodCall();
+//            case '.' -> parseMethodCall();
             default -> parseValue();
         };
     }
 
-    private MethodCallAst parseMethodCall() {
-        int initialRow = lexer.getRow();
-        int initialCol = lexer.getCol();
-
-        lexer.consumeChars(".");
-        lexer.consumeBlanks();
-        ExpressionAst objectExpression = parseExpression();
-        lexer.consumeBlanks();
-        lexer.consumeChars("#");
-        lexer.consumeBlanks();
-        String methodName = lexer.consumeWord();
-        lexer.consumeBlanks();
-        lexer.consumeChars("(");
-        lexer.consumeBlanks();
-        ExpressionAst argumentExpression = parseExpression();
-        lexer.consumeBlanks();
-        lexer.consumeChars(")");
-        lexer.consumeBlanks();
-        lexer.consumeChars("}}");
-
-        return new MethodCallAst(templateUrn, initialRow, initialCol, objectExpression, methodName, argumentExpression);
-    }
+//    private MethodCallAst parseMethodCall() {
+//        int initialRow = lexer.getRow();
+//        int initialCol = lexer.getCol();
+//
+//        lexer.consumeChars(".");
+//        lexer.consumeBlanks();
+//        ExpressionAst objectExpression = parseExpression();
+//        lexer.consumeBlanks();
+//        lexer.consumeChars("#");
+//        lexer.consumeBlanks();
+//        String methodName = lexer.consumeWord();
+//        lexer.consumeBlanks();
+//        lexer.consumeChars("(");
+//        lexer.consumeBlanks();
+//        ExpressionAst argumentExpression = parseExpression();
+//        lexer.consumeBlanks();
+//        lexer.consumeChars(")");
+//        lexer.consumeBlanks();
+//        lexer.consumeChars("}}");
+//
+//        return new MethodCallAst(templateUrn, initialRow, initialCol, objectExpression, methodName, argumentExpression);
+//    }
 
     protected ValueAst parseValue() {
         int initialRow = lexer.getRow();
@@ -243,10 +241,18 @@ public class Parser {
         lexer.consumeChars("^");
         lexer.consumeBlanks();
         ExpressionAst expressionAst = parseExpression();
+        lexer.consumeBlanks();
         lexer.consumeChars("}}");
-        TemplateAst bodyAst = parseTemplateUntilTag("{{/}}");
+        TemplateAst ifAst = parseTemplateUntil(lexer -> lexer.currentPosStartsWith("{{:}}") || lexer.currentPosStartsWith("{{/}}"));
+
+        TemplateAst elseAst = null;
+        if (lexer.currentPosStartsWith("{{:}}")) {
+            lexer.consumeChars("{{:}}");
+            elseAst = parseTemplateUntil(lexer -> lexer.currentPosStartsWith("{{/}}"));
+        }
+
         lexer.consumeChars("{{/}}");
-        return new IfNotAst(templateUrn, initialRow, initialCol, expressionAst, bodyAst);
+        return new IfNotAst(templateUrn, initialRow, initialCol, expressionAst, ifAst, elseAst);
     }
 
     protected ForAst parseForAst() {
@@ -278,7 +284,18 @@ public class Parser {
             }
         }
 
-        return new ExpressionAst(templateUrn, initialRow, initialCol, accessors);
+        ExpressionAst expressionArg = null;
+        lexer.consumeBlanks();
+        if (lexer.getCurrentChar() == '(') {
+            lexer.consumeChar();
+            lexer.consumeBlanks();
+            expressionArg = parseExpression();
+            lexer.consumeBlanks();
+            lexer.consumeChars(")");
+        }
+        lexer.consumeBlanks();
+
+        return new ExpressionAst(templateUrn, initialRow, initialCol, accessors, expressionArg);
     }
 
     protected Optional<TextAst> parseTextAst() {
